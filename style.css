@@ -57,11 +57,24 @@ button { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; f
 /* 모바일 환경 대응 */
 @media (max-width: 768px) { 
     .container { flex-direction: column; } 
-    .container .section:last-child { position: static; max-height: none; overflow-y: visible; } 
+    
+    /* ▼▼▼ 모바일에서 수강 내역 창을 상단에 고정하는 마법의 코드 ▼▼▼ */
+    .container .section:last-child { 
+        order: -1;             /* 순서를 강제로 맨 앞으로(위로) 끌어올립니다. */
+        position: sticky;      /* 스크롤을 내려도 화면에 끈적이처럼 붙어있게 합니다. */
+        top: 0;                /* 화면 맨 위쪽 천장에 붙입니다. */
+        z-index: 90;           /* 과목 목록 위로 지나가도록 층을 높여줍니다. */
+        max-height: 40vh;      /* 창이 너무 커져서 화면을 다 가리지 않게 높이를 40%로 제한합니다. */
+        overflow-y: auto;      /* 담은 과목이 많아지면 이 상자 안에서만 스크롤이 되게 합니다. */
+        margin-bottom: 20px;   /* 아래 과목 목록과의 간격을 띄워줍니다. */
+        box-shadow: 0 5px 15px rgba(0,0,0,0.15); /* 입체감이 나도록 그림자를 줍니다. */
+        border-bottom: 3px solid #0056b3; /* 아래쪽에 파란색 테두리를 그어 시각적으로 분리합니다. */
+    } 
+    /* ▲▲▲ 수정 끝 ▲▲▲ */
+
     .group-cards { grid-template-columns: 1fr; } 
     .modal-content { 
         width: 95%; 
-        /* ▼▼▼ 모바일에서도 기존 30%에서 5vh로 대폭 축소 ▼▼▼ */
         margin: 5vh auto; 
     } 
 }
