@@ -39,13 +39,19 @@
                 <div id="course-list"></div>
             </div>
 
-            <div class="section" style="display: flex; flex-direction: column;">
+            <div class="section" id="cart-section" style="display: flex; flex-direction: column;">
+                <button class="close-cart-btn" onclick="toggleMobileCart()">👇 내역 숨기기</button>
                 <h2>수강 내역</h2>
                 <div id="my-courses" style="flex-grow: 1;"></div>
                 <button class="btn-submit" onclick="submitCourses()" style="margin-top: 20px; width: 100%; padding: 15px; font-size: 16px;">수강신청 최종 제출</button>
             </div>
         </div>
     </div>
+
+    <button id="mobile-cart-btn" class="mobile-cart-btn" onclick="toggleMobileCart()">
+        🛒 수강 과목 <span id="cart-count-badge" class="badge">0</span>
+    </button>
+    <div id="cart-overlay" class="cart-overlay" onclick="toggleMobileCart()"></div>
 
     <div id="modal" class="modal">
         <div class="modal-content" style="width: 80%; height: 85vh; max-width: 1000px; display: flex; flex-direction: column;">

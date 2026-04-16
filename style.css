@@ -29,52 +29,100 @@ button { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; f
 .group-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .semester-header { background-color: #0056b3; color: white; padding: 8px 12px; border-radius: 4px; font-size: 14px; font-weight: bold; margin-top: 20px; margin-bottom: 10px; }
 .semester-header:first-child { margin-top: 0; }
-
-/* 모달 관련 스타일 */
-.modal { 
-    display: none; 
-    position: fixed; 
-    z-index: 100; 
-    left: 0; 
-    top: 0; 
-    width: 100%; 
-    height: 100%; 
-    background-color: rgba(0,0,0,0.5); 
-}
-
-.modal-content { 
-    background-color: white; 
-    /* ▼▼▼ 기존 15%에서 5vh(화면 높이의 5%)로 수정하여 화면에 꽉 차게 변경 ▼▼▼ */
-    margin: 5vh auto; 
-    padding: 20px; 
-    border-radius: 8px; 
-    width: 400px; 
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
-}
-
+.modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
+.modal-content { background-color: white; margin: 5vh auto; padding: 20px; border-radius: 8px; width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 .close-button { float: right; font-size: 24px; font-weight: bold; cursor: pointer; }
 
-/* 모바일 환경 대응 */
+/* PC 환경에서는 모바일 버튼들 숨김 */
+.mobile-cart-btn { display: none; }
+.cart-overlay { display: none; }
+.close-cart-btn { display: none; }
+
+/* ▼▼▼ 모바일 환경 전용 디자인 ▼▼▼ */
 @media (max-width: 768px) { 
     .container { flex-direction: column; } 
     
-    /* ▼▼▼ 모바일에서 수강 내역 창을 상단에 고정하는 마법의 코드 ▼▼▼ */
-    .container .section:last-child { 
-        order: -1;             /* 순서를 강제로 맨 앞으로(위로) 끌어올립니다. */
-        position: sticky;      /* 스크롤을 내려도 화면에 끈적이처럼 붙어있게 합니다. */
-        top: 0;                /* 화면 맨 위쪽 천장에 붙입니다. */
-        z-index: 90;           /* 과목 목록 위로 지나가도록 층을 높여줍니다. */
-        max-height: 40vh;      /* 창이 너무 커져서 화면을 다 가리지 않게 높이를 40%로 제한합니다. */
-        overflow-y: auto;      /* 담은 과목이 많아지면 이 상자 안에서만 스크롤이 되게 합니다. */
-        margin-bottom: 20px;   /* 아래 과목 목록과의 간격을 띄워줍니다. */
-        box-shadow: 0 5px 15px rgba(0,0,0,0.15); /* 입체감이 나도록 그림자를 줍니다. */
-        border-bottom: 3px solid #0056b3; /* 아래쪽에 파란색 테두리를 그어 시각적으로 분리합니다. */
+    /* 수강 내역 창을 아래에 숨겨진 '서랍' 형태로 바꿉니다 */
+    .container #cart-section { 
+        position: fixed;
+        bottom: -100%;
+        left: 0;
+        width: 100%;
+        max-height: 85vh;
+        overflow-y: auto;
+        z-index: 1000;
+        border-radius: 25px 25px 0 0;
+        margin: 0;
+        padding: 20px;
+        box-sizing: border-box;
+        transition: bottom 0.3s ease-in-out;
+        box-shadow: 0 -5px 15px rgba(0,0,0,0.2);
+        top: auto; 
+        align-self: auto;
     } 
-    /* ▲▲▲ 수정 끝 ▲▲▲ */
 
+    /* 버튼을 누르면 서랍이 위로 쓱 올라옵니다 */
+    .container #cart-section.open {
+        bottom: 0;
+    }
+
+    /* 오른쪽 아래에 둥둥 떠 다니는 동그란 버튼 */
+    .mobile-cart-btn {
+        display: flex;
+        position: fixed;
+        bottom: 25px;
+        right: 25px;
+        background-color: #0056b3;
+        color: white;
+        border-radius: 50px;
+        padding: 15px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        z-index: 990;
+        align-items: center;
+        gap: 10px;
+        border: none;
+        cursor: pointer;
+        transition: transform 0.2s;
+    }
+    
+    /* 담긴 과목 개수를 보여주는 빨간 동그라미 */
+    .mobile-cart-btn .badge {
+        background-color: #dc3545;
+        color: white;
+        border-radius: 50%;
+        padding: 3px 10px;
+        font-size: 15px;
+    }
+    
+    /* 서랍이 열렸을 때 화면 배경을 어둡게 처리 */
+    .cart-overlay {
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(0,0,0,0.6);
+        z-index: 995;
+        display: none;
+    }
+    .cart-overlay.open {
+        display: block;
+    }
+    
+    /* 서랍 닫기 버튼 */
+    .close-cart-btn {
+        display: block;
+        width: 100%;
+        background: #f1f3f5;
+        color: #333;
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 15px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    
     .group-cards { grid-template-columns: 1fr; } 
-    .modal-content { 
-        width: 95%; 
-        margin: 5vh auto; 
-    } 
+    .modal-content { width: 95%; margin: 5vh auto; } 
 }

@@ -291,6 +291,7 @@ function init() { if (currentUser) { showApp(); } else { showLogin(); } }
 function login() {
     const username = document.getElementById('username-input').value.trim();
     const grade = document.getElementById('grade-input').value;
+    
     if (username === '') { alert('이름 또는 학번을 입력해주세요.'); return; }
     
     currentUser = username;
@@ -330,12 +331,29 @@ function showApp() {
     render();
 }
 
+// ▼▼▼ 모바일 장바구니 토글 함수 ▼▼▼
+function toggleMobileCart() {
+    const cartSection = document.getElementById('cart-section');
+    const overlay = document.getElementById('cart-overlay');
+    if (cartSection && overlay) {
+        cartSection.classList.toggle('open');
+        overlay.classList.toggle('open');
+    }
+}
+
 function getEnrolledCount(semester, group) {
     return (usersData[currentUser] || []).filter(c => c.semester === semester && c.group === group).length;
 }
 
 function render() {
     let enrolledCourses = usersData[currentUser] || [];
+    
+    // ▼▼▼ 모바일 플로팅 버튼의 뱃지 숫자 업데이트 ▼▼▼
+    const badge = document.getElementById('cart-count-badge');
+    if (badge) {
+        badge.innerText = enrolledCourses.length;
+    }
+
     const courseListDiv = document.getElementById('course-list');
     const myCoursesDiv = document.getElementById('my-courses');
     const keyword = document.getElementById('search-input').value.toLowerCase();
@@ -498,34 +516,15 @@ function submitCourses() {
 
 function saveData() { localStorage.setItem('usersData', JSON.stringify(usersData)); }
 
-// ▼▼▼ 에러 발생 시에도 절대 멈추지 않는 방어형 상세 보기 로직 ▼▼▼
 function showDetail(id) {
     try {
         const course = courses.find(c => c.id === id);
         
         document.getElementById('modal-title').innerText = course.name;
+        document.getElementById('modal-category').innerText = `${course.grade}학년 / ${course.semester}학기 / ${course.group === '지정' ? '지정' : `선택 ${course.group}`}`;
         
-        // 모바일 사용자를 위해, 캔버스가 안 그려져도 언제든 클릭해서 볼 수 있는 안전한 직접 링크 추가!
-        const categoryHtml = `
-            ${course.grade}학년 / ${course.semester}학기 / ${course.group === '지정' ? '지정' : `선택 ${course.group}`}
-            <div style="margin-top: 15px;">
-                <a href="guide.pdf#page=${course.pdfPage}" target="_blank" style="display: inline-block; background-color: #0056b3; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-weight: bold; font-size: 14px;">
-                    📄 모바일은 여기를 눌러 원본 PDF 보기 (터치)
-                </a>
-            </div>
-        `;
-        document.getElementById('modal-category').innerHTML = categoryHtml;
-        
-        // 무조건 모달 창을 화면에 띄움
         document.getElementById('modal').style.display = 'block';
 
-        // 이전 HTML 파일인 경우를 대비한 iframe 방식 (안전장치 1)
-        const iframe = document.getElementById('modal-pdf-viewer');
-        if (iframe) {
-            iframe.src = `guide.pdf#page=${course.pdfPage}`;
-        }
-        
-        // 최신 HTML 파일인 경우를 위한 캔버스 방식 (안전장치 2)
         const canvas = document.getElementById('pdf-canvas');
         if (canvas && window.renderPage) {
             const ctx = canvas.getContext('2d');
@@ -542,7 +541,6 @@ function closeModal() {
     document.getElementById('modal').style.display = 'none'; 
 }
 
-// 혹시 모를 에러로 초기화가 멈추지 않도록 안전망을 두른 PDF.js 준비 코드
 try {
     if (window['pdfjs-dist/build/pdf']) {
         const pdfjsLib = window['pdfjs-dist/build/pdf'];
@@ -552,7 +550,7 @@ try {
         pdfjsLib.getDocument('guide.pdf').promise.then(function(pdfDoc_) {
             pdfDoc = pdfDoc_;
         }).catch(function(error) {
-            console.error('PDF 로드 실패 (파일 이름이 guide.pdf인지 확인해주세요):', error);
+            console.error('PDF 로드 실패:', error);
         });
 
         window.renderPage = function(pageNum) {
