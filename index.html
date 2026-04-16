@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>김해고 모의 수강신청 프로그램</title>
+    <title>수강신청 프로그램</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 </head>
 <body>
     <div id="login-container" class="login-section">
-        <h2>김해고 모의 수강신청 프로그램</h2>
+        <h2>수강신청 시스템</h2>
         <p>이름과 학년을 선택하여 로그인하세요.</p>
         <input type="text" id="username-input" placeholder="이름 또는 학번 입력" onkeypress="if(event.keyCode==13) login()">
         
@@ -55,7 +56,9 @@
                 </div>
                 <span class="close-button" onclick="closeModal()" style="font-size: 28px; line-height: 1;">&times;</span>
             </div>
-            <iframe id="modal-pdf-viewer" src="" style="width: 100%; flex-grow: 1; border: 1px solid #ccc; border-radius: 4px;"></iframe>
+            <div id="pdf-container" style="flex-grow: 1; overflow-y: auto; text-align: center; border: 1px solid #ccc; background-color: #525659; border-radius: 4px; padding: 10px;">
+                <canvas id="pdf-canvas" style="max-width: 100%; height: auto; box-shadow: 0 2px 5px rgba(0,0,0,0.3); background-color: white;"></canvas>
+            </div>
         </div>
     </div>
 

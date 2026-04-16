@@ -279,10 +279,7 @@ const rawCourses = [
 ];
 
 const courses = rawCourses.map(course => {
-    return {
-        ...course,
-        pdfPage: pageMapping[course.name] || 1
-    };
+    return { ...course, pdfPage: pageMapping[course.name] || 1 };
 });
 
 let currentUser = localStorage.getItem('currentUser') || null;
@@ -304,21 +301,16 @@ function login() {
     
     if (!usersData[currentUser]) { usersData[currentUser] = []; }
 
-    // ▼▼▼ 강력한 청소 기능 추가 ▼▼▼
-    // 1. 현재 공식 courses 목록에 완전히 똑같이 존재하는 과목만 남기고 과거의 유령 과목은 삭제합니다.
     usersData[currentUser] = usersData[currentUser].filter(enrolled => 
         courses.some(valid => valid.name === enrolled.name && valid.group === enrolled.group)
     );
 
-    // 2. 다른 학년의 과목이나 기존의 '지정' 과목을 수강 내역에서 비웁니다.
     usersData[currentUser] = usersData[currentUser].filter(c => c.grade === currentGrade && c.group !== '지정');
     
-    // 3. 새롭게 세팅된 해당 학년의 '지정' 과목을 수강 내역에 강제 추가합니다.
     const mandatoryCourses = courses.filter(c => c.grade === currentGrade && c.group === '지정');
     mandatoryCourses.forEach(mandatory => {
         usersData[currentUser].push(mandatory);
     });
-    // ▲▲▲ 청소 기능 끝 ▲▲▲
     
     saveData(); 
     document.getElementById('username-input').value = '';
@@ -514,19 +506,58 @@ function submitCourses() {
 
 function saveData() { localStorage.setItem('usersData', JSON.stringify(usersData)); }
 
+// --- PDF.js 렌더링 로직 ---
+const pdfjsLib = window['pdfjs-dist/build/pdf'];
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+let pdfDoc = null;
+
+// 앱 로드 시 PDF 파일 미리 불러오기
+pdfjsLib.getDocument('guide.pdf').promise.then(function(pdfDoc_) {
+    pdfDoc = pdfDoc_;
+}).catch(function(error) {
+    console.error('PDF 로드 실패:', error);
+});
+
+function renderPage(pageNum) {
+    if (!pdfDoc) {
+        // PDF가 아직 로딩되지 않았다면 0.2초 후 재시도
+        setTimeout(() => renderPage(pageNum), 200);
+        return;
+    }
+    
+    pdfDoc.getPage(pageNum).then(function(page) {
+        const canvas = document.getElementById('pdf-canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 모바일에서도 화질이 깨지지 않도록 1.5배 확대 렌더링
+        const viewport = page.getViewport({scale: 1.5});
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        const renderContext = { canvasContext: ctx, viewport: viewport };
+        page.render(renderContext);
+    });
+}
+
 function showDetail(id) {
     const course = courses.find(c => c.id === id);
     document.getElementById('modal-title').innerText = course.name;
     document.getElementById('modal-category').innerText = `${course.grade}학년 / ${course.semester}학기 / ${course.group === '지정' ? '지정' : `선택 ${course.group}`}`;
     
-    document.getElementById('modal-pdf-viewer').src = `guide.pdf#page=${course.pdfPage}`;
+    // 기존 내용 지우기
+    const canvas = document.getElementById('pdf-canvas');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // PDF.js를 통해 해당 페이지 캔버스에 그리기
+    renderPage(course.pdfPage);
     
     document.getElementById('modal').style.display = 'block';
 }
 
 function closeModal() { 
     document.getElementById('modal').style.display = 'none'; 
-    document.getElementById('modal-pdf-viewer').src = "";
 }
 
 window.onclick = function(event) { if (event.target == document.getElementById('modal')) closeModal(); }
