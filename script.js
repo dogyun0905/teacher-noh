@@ -1,143 +1,34 @@
-// ▼▼▼ 선생님 전용 설정: 실제 PDF 페이지 번호 입력란 ▼▼▼
+// ▼▼▼ 선생님께서 직접 확인하고 설정해주신 정확한 PDF 페이지 매핑 데이터 ▼▼▼
 const pageMapping = {
-    // --- 지정 과목 ---
-    '문학': 42, 
-    '대수': 55,
-    '영어1': 72,
-    '스포츠 생활 1': 138,
-    '독서와 작문': 41,
-    '미적분 1': 56,
-    '영어 독해와 작문': 74,
-    '스포츠 생활 2': 139,
-    '스포츠 문화': 136,
-    '스포츠 과학': 137,
-
-    // --- 국어 교과 ---
-    '문학과 영상': 44,
-    '독서 토론과 글쓰기': 46,
-    '주제 탐구 독서': 43,
-    '언어생활 탐구': 48,
-    '화법과 언어': 47,
-    '언어생활과 한자': 201,
-
-    // --- 수학 교과 ---
-    '기하': 59,
-    '경제 수학': 60,
-    '인공지능 수학': 61,
-    '미적분Ⅱ': 58,
-    '수학과제 탐구': 65,
-    '산업수학': 64,
-    '확률과 통계': 57,
-
-    // --- 영어 교과 ---
-    '심화 영어': 77,
-    '미디어 영어': 81,
-    '세계 문화와 영어': 82,
-    '실생활 영어 회화': 80,
-    '영어 발표와 토론': 76,
-    '영미 문학 읽기': 78,
-    '심화 영어 독해와 작문': 79,
-    '영어Ⅱ': 73,
-
-    // --- 사회 교과 ---
-    '인문학과 윤리': 101,
-    '세계시민과 지리': 89,
-    '경제': 98,
-    '정치': 96,
-    '사회문제 탐구': 104,
-    '세계사': 90,
-    '윤리와 사상': 100,
-    '도시의 미래 탐구': 94,
-    '사회와 문화': 91,
-    '현대사회와 윤리': 92,
-    '한국지리 탐구': 93,
-    '기후변화와 지속가능한 세계': 106,
-    '동아시아 역사 기행': 95,
-    '역사로 탐구하는 현대 세계': 103,
-    '법과 사회': 97,
-    '윤리문제 탐구': 107,
-    '금융과 경제생활': 105,
-    '여행지리': 102,
-
-    // --- 과학 교과 ---
-    '물리학': 117,
-    '화학': 118,
-    '생명과학': 119,
-    '지구과학': 120,
-    '역학과 에너지': 121,
-    '물질과 에너지': 123,
-    '세포와 물질대사': 125,
-    '지구시스템과학': 127,
-    '기후변화와 환경생태': 130,
-    '전자기와 양자': 122,
-    '화학 반응의 세계': 124,
-    '생물의 유전': 126,
-    '행성우주과학': 128,
-    '융합과학 탐구': 131,
-    '프런티어 사이언스': 124,
-
-    // --- 기술/가정/정보 교과 ---
-    '정보': 159,
-    '데이터 과학': 161,
-    '창의공학설계': 154,
-    '소프트웨어와 생활': 162,
-    '정보과학': 154,
-
-    // --- 제2외국어 / 한문 교과 ---
-    '한문 고전 읽기': 192,
-    '일본어': 171,
-    '중국어': 170,
-    '일본어 회화': 188,
-    '중국어 회화': 187,
-    '중국 문화': 196,
-    '일본 문화': 197,
-    '심화 중국어': 179,
-    '심화 일본어': 180,
-
-    // --- 예술 교과 ---
-    '음악 감상과 비평': 145,
-    '미술 감상과 비평': 147,
-    '음악 연주와 창작': 144,
-    '미술 창작': 146,
-
-    // --- 교양 / 진로 / 보건 등 ---
-    '후마니타스': 202,
-    '지속가능한 삶과 공동체 생활탐구': 203,
-    '보건 진로 탐색': 204,
-    '자기 주도적인 삶과 미래 역량 탐구': 205
+    '문학': 42, '대수': 55, '영어1': 72, '스포츠 생활 1': 138, '독서와 작문': 41, '미적분 1': 56, '영어 독해와 작문': 74, '스포츠 생활 2': 139, '스포츠 문화': 136, '스포츠 과학': 137,
+    '문학과 영상': 44, '독서 토론과 글쓰기': 46, '주제 탐구 독서': 43, '언어생활 탐구': 48, '화법과 언어': 47, '언어생활과 한자': 201,
+    '기하': 57, '경제 수학': 60, '인공지능 수학': 61, '미적분Ⅱ': 58, '수학과제 탐구': 65, '산업수학': 64, '확률과 통계': 57,
+    '심화 영어': 77, '미디어 영어': 81, '세계 문화와 영어': 82, '실생활 영어 회화': 80, '영어 발표와 토론': 76, '영미 문학 읽기': 78, '심화 영어 독해와 작문': 79, '영어Ⅱ': 73,
+    '인문학과 윤리': 101, '세계시민과 지리': 89, '경제': 86, '정치': 98, '사회문제 탐구': 104, '세계사': 90, '윤리와 사상': 100, '도시의 미래 탐구': 94, '사회와 문화': 91, '현대사회와 윤리': 92, '한국지리 탐구': 93, '기후변화와 지속가능한 세계': 106, '동아시아 역사 기행': 95, '역사로 탐구하는 현대 세계': 103, '법과 사회': 97, '윤리문제 탐구': 107, '금융과 경제생활': 105, '여행지리': 102,
+    '물리학': 117, '화학': 118, '생명과학': 119, '지구과학': 120, '역학과 에너지': 121, '물질과 에너지': 123, '세포와 물질대사': 125, '지구시스템과학': 127, '기후변화와 환경생태': 130, '전자기와 양자': 122, '화학 반응의 세계': 124, '생물의 유전': 126, '행성우주과학': 128, '융합과학 탐구': 131, '프런티어 사이언스': 124,
+    '정보': 159, '데이터 과학': 161, '창의공학설계': 154, '소프트웨어와 생활': 162, '정보과학': 154,
+    '한문 고전 읽기': 192, '일본어': 171, '중국어': 170, '일본어 회화': 188, '중국어 회화': 187, '중국 문화': 196, '일본 문화': 197, '심화 중국어': 179, '심화 일본어': 180,
+    '음악 감상과 비평': 145, '미술 감상과 비평': 147, '음악 연주와 창작': 144, '미술 창작': 146,
+    '후마니타스': 202, '지속가능한 삶과 공동체 생활탐구': 203, '보건 진로 탐색': 204, '자기 주도적인 삶과 미래 역량 탐구': 205
 };
-// ▲▲▲ 설정 끝 ▲▲▲
 
-
-// 수강신청 제약 조건 정의
 const rules = {
-    2: {
-        1: { 'A': 4, 'C': 1 },
-        2: { 'B': 4, 'D': 1 }
-    },
-    3: {
-        1: { 'E': 8, 'G': 1, 'I': 1 },
-        2: { 'F': 8, 'H': 1, 'I': 1 }
-    }
+    2: { 1: { 'A': 4, 'C': 1 }, 2: { 'B': 4, 'D': 1 } },
+    3: { 1: { 'E': 8, 'G': 1, 'I': 1 }, 2: { 'F': 8, 'H': 1, 'I': 1 } }
 };
 
-// 개설 과목 데이터 (오직 선생님이 지정한 필수 과목과 엑셀 데이터만 존재합니다)
 const rawCourses = [
-    // --- 선생님 지정 필수 과목 ---
     { id: 1001, grade: 2, semester: 1, group: '지정', name: '문학', desc: '필수 지정 과목입니다.' },
     { id: 1002, grade: 2, semester: 1, group: '지정', name: '대수', desc: '필수 지정 과목입니다.' },
     { id: 1003, grade: 2, semester: 1, group: '지정', name: '영어1', desc: '필수 지정 과목입니다.' },
     { id: 1004, grade: 2, semester: 1, group: '지정', name: '스포츠 생활 1', desc: '필수 지정 과목입니다.' },
-    
     { id: 1005, grade: 2, semester: 2, group: '지정', name: '독서와 작문', desc: '필수 지정 과목입니다.' },
     { id: 1006, grade: 2, semester: 2, group: '지정', name: '미적분 1', desc: '필수 지정 과목입니다.' },
     { id: 1007, grade: 2, semester: 2, group: '지정', name: '영어 독해와 작문', desc: '필수 지정 과목입니다.' },
     { id: 1008, grade: 2, semester: 2, group: '지정', name: '스포츠 생활 2', desc: '필수 지정 과목입니다.' },
-    
     { id: 1009, grade: 3, semester: 1, group: '지정', name: '스포츠 문화', desc: '필수 지정 과목입니다.' },
     { id: 1010, grade: 3, semester: 2, group: '지정', name: '스포츠 과학', desc: '필수 지정 과목입니다.' },
     
-    // --- 엑셀 기반 선택군 A ---
     { id: 9, grade: 2, semester: 1, group: 'A', name: '문학과 영상', desc: '문학과 영상 과목입니다.' },
     { id: 10, grade: 2, semester: 1, group: 'A', name: '독서 토론과 글쓰기', desc: '독서 토론과 글쓰기 과목입니다.' },
     { id: 11, grade: 2, semester: 1, group: 'A', name: '기하', desc: '기하 과목입니다.' },
@@ -160,7 +51,6 @@ const rawCourses = [
     { id: 28, grade: 2, semester: 1, group: 'A', name: '정보', desc: '정보 과목입니다.' },
     { id: 29, grade: 2, semester: 1, group: 'A', name: '언어생활과 한자', desc: '언어생활과 한자 과목입니다.' },
     
-    // --- 엑셀 기반 선택군 B ---
     { id: 30, grade: 2, semester: 2, group: 'B', name: '문학과 영상', desc: '문학과 영상 과목입니다.' },
     { id: 31, grade: 2, semester: 2, group: 'B', name: '독서 토론과 글쓰기', desc: '독서 토론과 글쓰기 과목입니다.' },
     { id: 32, grade: 2, semester: 2, group: 'B', name: '기하', desc: '기하 과목입니다.' },
@@ -188,15 +78,11 @@ const rawCourses = [
     { id: 54, grade: 2, semester: 2, group: 'B', name: '데이터 과학', desc: '데이터 과학 과목입니다.' },
     { id: 55, grade: 2, semester: 2, group: 'B', name: '한문 고전 읽기', desc: '한문 고전 읽기 과목입니다.' },
     
-    // --- 엑셀 기반 선택군 C ---
     { id: 56, grade: 2, semester: 1, group: 'C', name: '일본어', desc: '일본어 과목입니다.' },
     { id: 57, grade: 2, semester: 1, group: 'C', name: '중국어', desc: '중국어 과목입니다.' },
-    
-    // --- 엑셀 기반 선택군 D ---
     { id: 58, grade: 2, semester: 2, group: 'D', name: '일본어 회화', desc: '일본어 회화 과목입니다.' },
     { id: 59, grade: 2, semester: 2, group: 'D', name: '중국어 회화', desc: '중국어 회화 과목입니다.' },
     
-    // --- 엑셀 기반 선택군 E ---
     { id: 60, grade: 3, semester: 1, group: 'E', name: '주제 탐구 독서', desc: '주제 탐구 독서 과목입니다.' },
     { id: 61, grade: 3, semester: 1, group: 'E', name: '언어생활 탐구', desc: '언어생활 탐구 과목입니다.' },
     { id: 62, grade: 3, semester: 1, group: 'E', name: '화법과 언어', desc: '화법과 언어 과목입니다.' },
@@ -231,7 +117,6 @@ const rawCourses = [
     { id: 91, grade: 3, semester: 1, group: 'E', name: '중국 문화', desc: '중국 문화 과목입니다.' },
     { id: 92, grade: 3, semester: 1, group: 'E', name: '일본 문화', desc: '일본 문화 과목입니다.' },
     
-    // --- 엑셀 기반 선택군 F ---
     { id: 93, grade: 3, semester: 2, group: 'F', name: '주제 탐구 독서', desc: '주제 탐구 독서 과목입니다.' },
     { id: 94, grade: 3, semester: 2, group: 'F', name: '언어생활 탐구', desc: '언어생활 탐구 과목입니다.' },
     { id: 95, grade: 3, semester: 2, group: 'F', name: '화법과 언어', desc: '화법과 언어 과목입니다.' },
@@ -261,15 +146,12 @@ const rawCourses = [
     { id: 119, grade: 3, semester: 2, group: 'F', name: '심화 중국어', desc: '심화 중국어 과목입니다.' },
     { id: 120, grade: 3, semester: 2, group: 'F', name: '심화 일본어', desc: '심화 일본어 과목입니다.' },
     
-    // --- 엑셀 기반 선택군 G ---
     { id: 121, grade: 3, semester: 1, group: 'G', name: '음악 감상과 비평', desc: '음악 감상과 비평 과목입니다.' },
     { id: 122, grade: 3, semester: 1, group: 'G', name: '미술 감상과 비평', desc: '미술 감상과 비평 과목입니다.' },
     
-    // --- 엑셀 기반 선택군 H ---
     { id: 123, grade: 3, semester: 2, group: 'H', name: '음악 연주와 창작', desc: '음악 연주와 창작 과목입니다.' },
     { id: 124, grade: 3, semester: 2, group: 'H', name: '미술 창작', desc: '미술 창작 과목입니다.' },
     
-    // --- 엑셀 기반 선택군 I ---
     { id: 125, grade: 3, semester: 1, group: 'I', name: '지속가능한 삶과 공동체 생활탐구', desc: '지속가능한 삶과 공동체 생활탐구 과목입니다.' },
     { id: 126, grade: 3, semester: 2, group: 'I', name: '지속가능한 삶과 공동체 생활탐구', desc: '지속가능한 삶과 공동체 생활탐구 과목입니다.' },
     { id: 127, grade: 3, semester: 1, group: 'I', name: '보건 진로 탐색', desc: '보건 진로 탐색 과목입니다.' },
@@ -304,6 +186,7 @@ function login() {
     usersData[currentUser] = usersData[currentUser].filter(enrolled => 
         courses.some(valid => valid.name === enrolled.name && valid.group === enrolled.group)
     );
+
     usersData[currentUser] = usersData[currentUser].filter(c => c.grade === currentGrade && c.group !== '지정');
     
     const mandatoryCourses = courses.filter(c => c.grade === currentGrade && c.group === '지정');
@@ -324,6 +207,7 @@ function logout() {
 }
 
 function showLogin() { document.getElementById('login-container').style.display = 'block'; document.getElementById('app-container').style.display = 'none'; }
+
 function showApp() {
     document.getElementById('login-container').style.display = 'none';
     document.getElementById('app-container').style.display = 'block';
@@ -331,7 +215,6 @@ function showApp() {
     render();
 }
 
-// ▼▼▼ 모바일 장바구니 토글 함수 ▼▼▼
 function toggleMobileCart() {
     const cartSection = document.getElementById('cart-section');
     const overlay = document.getElementById('cart-overlay');
@@ -348,11 +231,8 @@ function getEnrolledCount(semester, group) {
 function render() {
     let enrolledCourses = usersData[currentUser] || [];
     
-    // ▼▼▼ 모바일 플로팅 버튼의 뱃지 숫자 업데이트 ▼▼▼
     const badge = document.getElementById('cart-count-badge');
-    if (badge) {
-        badge.innerText = enrolledCourses.length;
-    }
+    if (badge) { badge.innerText = enrolledCourses.length; }
 
     const courseListDiv = document.getElementById('course-list');
     const myCoursesDiv = document.getElementById('my-courses');
@@ -370,6 +250,7 @@ function render() {
         courseListDiv.innerHTML = '<p>결과가 없습니다.</p>';
     } else {
         const semesters = [1, 2];
+        
         semesters.forEach(semester => {
             const coursesInSem = filteredCourses.filter(c => c.semester === semester);
             if (coursesInSem.length > 0) {
@@ -378,7 +259,14 @@ function render() {
                 semWrapper.innerHTML = `<div class="grade-header">${currentGrade}학년 ${semester}학기 과목</div>`;
                 courseListDiv.appendChild(semWrapper);
 
-                const groups = [...new Set(coursesInSem.map(c => c.group))];
+                let groups = [...new Set(coursesInSem.map(c => c.group))];
+                
+                groups = groups.sort((a, b) => {
+                    if (a === '지정') return -1;
+                    if (b === '지정') return 1;
+                    return a.localeCompare(b);
+                });
+                
                 groups.forEach(group => {
                     const coursesInGroup = coursesInSem.filter(c => c.group === group);
                     if (coursesInGroup.length > 0) {
@@ -451,10 +339,13 @@ function render() {
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.style.marginBottom = '10px';
+                    
+                    const cancelBtnHtml = isMandatory ? '' : `<button class="btn-cancel" onclick="cancelCourse(${course.id})" style="padding:4px; margin-top:5px; width:100%;">수강 취소</button>`;
+                    
                     card.innerHTML = `
                         <div style="font-size:14px; font-weight:bold;">${course.name}</div>
                         <div style="font-size:12px; color:#666;">${course.group === '지정' ? '필수지정' : `선택 ${course.group}`}</div>
-                        ${isMandatory ? '' : `<button class="btn-cancel" onclick="cancelCourse(${course.id})" style="padding:4px; margin-top:5px; width:100%;">수강 취소</button>`}
+                        ${cancelBtnHtml}
                     `;
                     myCoursesDiv.appendChild(card);
                 });
@@ -466,6 +357,14 @@ function render() {
 function enrollCourse(id) {
     const course = courses.find(c => c.id === id);
     if (!course) return;
+
+    // 다른 학기 동일 과목 중복 수강 방지
+    const isAlreadyTaken = usersData[currentUser].some(e => e.name === course.name && e.id !== course.id);
+    if (isAlreadyTaken) {
+        alert(`'${course.name}' 과목은 다른 학기에서 이미 신청하셨습니다. 중복 수강은 불가능합니다.`);
+        return;
+    }
+
     if (course.group !== '지정') {
         const maxCount = rules[currentGrade][course.semester][course.group];
         const currentCount = getEnrolledCount(course.semester, course.group);
@@ -474,6 +373,7 @@ function enrollCourse(id) {
             return;
         }
     }
+
     if (!usersData[currentUser].some(e => e.id === id)) {
         usersData[currentUser].push(course);
         saveData();
@@ -507,8 +407,10 @@ function submitCourses() {
             }
         }
     }
+
     if (isComplete) {
-        alert('축하합니다! 모든 수강신청 조건을 완벽하게 충족하여 제출이 완료되었습니다.');
+        alert('축하합니다! 모든 조건을 완벽하게 충족하여 모의 수강신청 제출이 완료되었습니다.');
+        // 제출 후 잠금 기능 제거 (학생들이 언제든 다시 변경 가능)
     } else {
         alert('아직 조건이 부족합니다!\n\n[부족한 항목]\n' + missingMessages.join('\n'));
     }
@@ -531,7 +433,6 @@ function showDetail(id) {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             window.renderPage(course.pdfPage);
         }
-        
     } catch (e) {
         console.error("상세보기 오류:", e);
     }
@@ -542,8 +443,9 @@ function closeModal() {
 }
 
 try {
-    if (window['pdfjs-dist/build/pdf']) {
-        const pdfjsLib = window['pdfjs-dist/build/pdf'];
+    const pdfjsLib = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
+    
+    if (pdfjsLib) {
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
         let pdfDoc = null;
@@ -568,6 +470,8 @@ try {
                 page.render({ canvasContext: ctx, viewport: viewport });
             }).catch(e => console.error("페이지 렌더링 실패:", e));
         };
+    } else {
+        console.error("pdfjsLib 객체를 찾을 수 없습니다. HTML의 script 태그를 확인해주세요.");
     }
 } catch (e) {
     console.error("PDF 초기화 중 에러 발생:", e);
