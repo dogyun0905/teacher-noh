@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>수강신청 프로그램</title>
+    <title>김해고 모의 수강신청 프로그램</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 </head>
 <body>
     <div id="login-container" class="login-section">
-        <h2>수강신청 시스템</h2>
+        <h2>김해고 모의 수강신청 프로그램</h2>
         <p>이름과 학년을 선택하여 로그인하세요.</p>
         <input type="text" id="username-input" placeholder="이름 또는 학번 입력" onkeypress="if(event.keyCode==13) login()">
         
@@ -23,7 +23,7 @@
 
     <div id="app-container" style="display: none;">
         <div class="header-area">
-            <h1>수강신청 프로그램</h1>
+            <h1>김해고 모의 수강신청 프로그램</h1>
             <div class="user-info">
                 <span id="user-greeting" style="font-weight: bold; margin-right: 15px;"></span>
                 <button class="btn-cancel" onclick="logout()">로그아웃</button>
@@ -40,10 +40,10 @@
             </div>
 
             <div class="section" id="cart-section" style="display: flex; flex-direction: column;">
-                <button class="close-cart-btn" onclick="toggleMobileCart()">👇 내역 숨기기</button>
+                <button class="close-cart-btn" onclick="toggleMobileCart()">내역 숨기기</button>
                 <h2>수강 내역</h2>
                 <div id="my-courses" style="flex-grow: 1;"></div>
-                <button class="btn-submit" onclick="submitCourses()" style="margin-top: 20px; width: 100%; padding: 15px; font-size: 16px;">수강신청 최종 제출</button>
+                <button class="btn-submit" onclick="submitCourses()" style="margin-top: 20px; width: 100%; padding: 15px; font-size: 16px;">모의 수강신청</button>
             </div>
         </div>
     </div>
