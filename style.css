@@ -1,74 +1,53 @@
-/* 기본 */
+/* =========================
+   ✅ 1. 기본 = 모바일 (Mobile First)
+   ========================= */
+
 body {
     font-family: sans-serif;
     background-color: #f8f9fa;
-    margin: 20px;
+    margin: 0;
     color: #333;
-}
-
-/* 로그인 */
-.login-section {
-    max-width: 400px;
-    margin: 100px auto;
-    background: white;
-    padding: 40px;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-    text-align: center;
 }
 
 /* 헤더 */
 .header-area {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1400px;
-    margin: 0 auto 20px;
-    padding: 0 12px 10px;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px;
     border-bottom: 2px solid #dee2e6;
 }
+
 .header-main-row {
     display: flex;
-    gap: 10px;
+    flex-direction: column;
+    gap: 8px;
 }
+
 .user-info {
     display: flex;
-    gap: 10px;
+    justify-content: space-between;
 }
 
 /* 컨테이너 */
 .container {
     display: flex;
-    gap: 20px;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 12px;
-}
-.left-panel {
-    flex: 3;
-}
-
-/* 수강내역 (PC) */
-#cart-section {
-    flex: 1;
-    position: sticky;
-    top: 20px;
-    max-height: 90vh;
-    overflow-y: auto;
-    min-width: 280px;
+    flex-direction: column;
+    padding: 0;
 }
 
 /* 카드 */
 .group-cards {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 12px;
 }
+
 .card {
-    border: 1px solid #dee2e6;
-    padding: 18px;
-    border-radius: 10px;
     background: white;
+    border: 1px solid #dee2e6;
+    padding: 16px;
+    border-radius: 10px;
 }
 
 /* 버튼 */
@@ -77,21 +56,57 @@ body {
     gap: 6px;
     margin-top: 10px;
 }
+
 .button-group button {
     flex: 1;
-    padding: 10px;
+    padding: 12px;
     font-size: 14px;
+}
+
+/* =========================
+   📱 수강내역 (모바일: 바텀시트)
+   ========================= */
+
+#cart-section {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    width: 100%;
+    max-height: 75vh;
+
+    background: white;
+    border-radius: 20px 20px 0 0;
+
+    transform: translateY(100%);
+    transition: transform 0.3s ease;
+
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+
+    z-index: 1000;
+    padding: 20px 16px 30px;
+}
+
+#cart-section.open {
+    transform: translateY(0);
 }
 
 /* 모바일 버튼 */
 .mobile-cart-btn {
-    display: none;
     position: fixed;
     bottom: 16px;
     right: 16px;
-    z-index: 1000;
+    z-index: 1001;
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
     background: #0056b3;
     color: white;
+
     border-radius: 50px;
     padding: 14px 18px;
 }
@@ -104,86 +119,75 @@ body {
     background: rgba(0,0,0,0.4);
     z-index: 999;
 }
+
 .cart-overlay.open {
     display: block;
 }
 
 /* =========================
-   📱 모바일 최적화 핵심
+   💻 2. PC 전용 (769px 이상)
    ========================= */
-@media (max-width: 768px) {
 
-    /* 전체 여백 제거 */
+@media (min-width: 769px) {
+
     body {
-        margin: 0;
-    }
-
-    /* 세로 레이아웃 */
-    .container {
-        flex-direction: column;
-        padding: 0;
-    }
-
-    /* 카드 1열 */
-    .group-cards {
-        grid-template-columns: 1fr;
+        margin: 20px;
     }
 
     /* 헤더 */
     .header-area {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 10px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1400px;
+        margin: 0 auto 20px;
     }
 
     .header-main-row {
-        flex-direction: column;
-    }
-
-    #main-title {
-        text-align: center;
-        font-size: 20px;
-    }
-
-    /* 🔥 핵심: 수강내역 완전 수정 */
-    #cart-section {
-        position: fixed !important;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        width: 100vw;
-        max-width: 100%;
-        margin: 0;
-        padding: 20px 16px 30px;
-        box-sizing: border-box;
-
-        border-radius: 20px 20px 0 0;
-        background: white;
-
-        transform: translateY(100%);
-        transition: transform 0.3s ease;
-
-        max-height: 75vh;
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-
-        z-index: 1000;
-    }
-
-    #cart-section.open {
-        transform: translateY(0);
-    }
-
-    /* 카드 꽉 채우기 */
-    #my-courses .card {
-        width: 100%;
-        padding: 14px;
-    }
-
-    /* 모바일 버튼 활성화 */
-    .mobile-cart-btn {
-        display: flex;
+        flex-direction: row;
         align-items: center;
-        gap: 6px;
+        gap: 20px;
+    }
+
+    /* 컨테이너 */
+    .container {
+        flex-direction: row;
+        gap: 20px;
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .left-panel {
+        flex: 3;
+    }
+
+    /* 카드 2열 */
+    .group-cards {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    /* 🔥 PC 수강내역 (사이드바) */
+    #cart-section {
+        position: sticky;
+        top: 20px;
+
+        transform: none;
+        max-height: 90vh;
+
+        border-radius: 12px;
+        padding: 20px;
+
+        flex: 1;
+        min-width: 280px;
+    }
+
+    /* 모바일 버튼 숨김 */
+    .mobile-cart-btn {
+        display: none;
+    }
+
+    /* 오버레이 제거 */
+    .cart-overlay {
+        display: none !important;
     }
 }
