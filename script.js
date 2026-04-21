@@ -718,9 +718,16 @@ try {
                 const canvas = document.getElementById('pdf-canvas');
                 if (!canvas) return;
                 const ctx = canvas.getContext('2d');
-                const viewport = page.getViewport({scale: 1.5});
+                // 컨테이너 너비에 맞게 스케일 자동 계산
+                const container = document.getElementById('pdf-container');
+                const containerWidth = container ? container.clientWidth - 30 : window.innerWidth - 40;
+                const baseViewport = page.getViewport({ scale: 1 });
+                const scale = Math.min(containerWidth / baseViewport.width, 1.5);
+                const viewport = page.getViewport({ scale });
                 canvas.height = viewport.height;
                 canvas.width = viewport.width;
+                canvas.style.maxWidth = '100%';
+                canvas.style.height = 'auto';
                 page.render({ canvasContext: ctx, viewport: viewport });
             }).catch(e => console.error("페이지 렌더링 실패:", e));
         };
