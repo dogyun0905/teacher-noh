@@ -68,3 +68,31 @@ body { font-family: sans-serif; background-color: #f8f9fa; margin: 20px; color: 
     #cart-section.open { bottom: 0 !important; }
     .mobile-cart-btn { display: flex; position: fixed; bottom: 20px; right: 20px; z-index: 999; }
 }
+/* ── 모달 (누락 복구) ── */
+.modal { display: none; position: fixed; z-index: 200; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.55); overflow: auto; }
+.close-button { font-size: 28px; cursor: pointer; color: #555; line-height: 1; }
+.close-button:hover { color: #000; }
+
+/* ── 모바일 카트 버튼 & 오버레이 ── */
+.mobile-cart-btn { display: none; align-items: center; gap: 8px; background: #0056b3; color: white; border: none; border-radius: 50px; padding: 14px 22px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.25); }
+.badge { background: #dc3545; color: white; border-radius: 50%; padding: 2px 7px; font-size: 13px; font-weight: bold; }
+.cart-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; }
+.cart-overlay.open { display: block; }
+
+/* ── 수강 내역 닫기 버튼 (모바일) ── */
+.close-cart-btn { display: none; background: none; border: none; font-size: 14px; color: #888; cursor: pointer; align-self: flex-end; padding: 0 0 10px 0; }
+@media (max-width: 768px) { .close-cart-btn { display: block; } }
+
+/* ── 그룹/학기 구조 ── */
+.grade-wrapper { margin-bottom: 10px; }
+.grade-header { background: #343a40; color: white; padding: 12px 15px; border-radius: 6px; font-size: 17px; font-weight: bold; margin-bottom: 15px; }
+.group-box { border: 2px solid #e9ecef; border-radius: 10px; padding: 18px; margin-bottom: 20px; background: #fcfcfc; }
+.group-title { font-size: 15px; font-weight: bold; color: #495057; margin-bottom: 14px; padding-bottom: 8px; border-bottom: 2px solid #0056b3; display: flex; justify-content: space-between; align-items: center; }
+.progress-text { font-size: 13px; color: #dc3545; font-weight: bold; }
+.progress-text.complete { color: #28a745; }
+
+/* ── 비공개 배지 ── */
+.private-badge { color: #dc3545; font-size: 12px; border: 1px solid #dc3545; padding: 2px 7px; border-radius: 4px; font-weight: normal; }
+
+/* ── QA 헤더 ── */
+.qa-header { margin-bottom: 20px; border-bottom: 2px solid #e9ecef; padding-bottom: 15px; }

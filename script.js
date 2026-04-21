@@ -189,7 +189,12 @@ function login() {
     const grade = document.getElementById('grade-input').value;
     
     if (username === '') { alert('이름 또는 학번을 입력해주세요.'); return; }
-    
+
+    // Fix: 이전 사용자 데이터 초기화
+    myEnrolledCourses = [];
+    qaData = [];
+    if (window._qaUnsubscribe) { window._qaUnsubscribe(); window._qaUnsubscribe = null; }
+
     currentUser = username;
     currentGrade = parseInt(grade);
     localStorage.setItem('currentUser', currentUser);
@@ -199,13 +204,12 @@ function login() {
 }
 
 function logout() { 
+    if (window._qaUnsubscribe) { window._qaUnsubscribe(); window._qaUnsubscribe = null; }
     currentUser = null; 
     localStorage.clear();
-    
     myEnrolledCourses = [];
     qaData = [];
     document.getElementById('username-input').value = '';
-    
     showLogin(); 
 }
 
@@ -301,7 +305,10 @@ function render() {
 
     const courseListDiv = document.getElementById('course-list');
     const myCoursesDiv = document.getElementById('my-courses');
-    const keyword = document.getElementById('search-input').value.toLowerCase();
+    // Fix: QA뷰 등 course-view가 없을 때 null 크래시 방지
+    if (!courseListDiv || !myCoursesDiv) return;
+    const searchEl = document.getElementById('search-input');
+    const keyword = searchEl ? searchEl.value.toLowerCase() : '';
 
     courseListDiv.innerHTML = '';
     myCoursesDiv.innerHTML = '';
@@ -480,7 +487,9 @@ function submitCourses() {
 }
 
 function listenToQABoard() {
-    db.collection("qa").orderBy("timestamp", "desc").onSnapshot((querySnapshot) => {
+    // Fix: 중복 listener 방지
+    if (window._qaUnsubscribe) { window._qaUnsubscribe(); }
+    window._qaUnsubscribe = db.collection("qa").orderBy("timestamp", "desc").onSnapshot((querySnapshot) => {
         qaData = [];
         querySnapshot.forEach((doc) => {
             let data = doc.data();
@@ -723,5 +732,5 @@ try {
 }
 
 window.onclick = function(event) { if (event.target == document.getElementById('modal')) closeModal(); }
-document.getElementById('search-input').addEventListener('input', render);
+const _si = document.getElementById('search-input'); if (_si) _si.addEventListener('input', render);
 init();
