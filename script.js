@@ -508,7 +508,7 @@ function renderHistoryStudent(name, grade, enrolled, container) {
                 const col3 = subjectColors[sub3] || subjectColors['기타'];
                 const row = document.createElement('div');
                 row.className = 'history-course-row';
-                row.innerHTML = `<span class="history-dot">•</span> ${course.name} <span class="course-credit-badge" style="background:${col3.bg}; color:${col3.text}; border:1px solid ${col3.border};">${cr3}학점</span>`;
+                row.innerHTML = `<span class="history-dot">•</span> ${course.name} <span class="course-credit-badge">${cr3}학점</span>`;
                 container.appendChild(row);
             });
         });
@@ -678,7 +678,7 @@ function render() {
                             card.innerHTML = `
                                 <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:4px;">
                                     <h4 style="color:#0056b3; margin:0;">${course.name}</h4>
-                                    <span class="course-credit-badge" style="background:${col.bg}; color:${col.text}; border:1px solid ${col.border};">${course.credit}학점</span>
+                                    <span class="course-credit-badge">${course.credit}학점</span>
                                 </div>
                                 <div class="button-group">
                                     <button class="btn-detail" onclick="showDetail(${course.id})">상세</button>
@@ -723,7 +723,7 @@ function render() {
                     card.innerHTML = `
                         <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:4px;">
                             <div style="font-size:14px; font-weight:bold; word-break:keep-all;">${course.name}</div>
-                            <span class="course-credit-badge" style="background:${col2.bg}; color:${col2.text}; border:1px solid ${col2.border}; flex-shrink:0;">${cr}학점</span>
+                            <span class="course-credit-badge">${cr}학점</span>
                         </div>
                         <div style="font-size:12px; color:#666; margin-top:3px;">${course.group === '지정' ? '필수지정' : `선택 ${course.group}`}</div>
                         ${cancelBtnHtml}
