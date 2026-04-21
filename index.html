@@ -27,7 +27,8 @@
         <div class="header-area">
             <div class="header-main-row">
                 <h1 id="main-title">김해고 모의 수강신청</h1>
-                <button class="btn-main-nav" id="nav-qa-btn" onclick="showQAView()">질문 게시판 가기</button>
+                <button class="btn-main-nav" id="nav-qa-btn" onclick="showQAView()">질문 게시판</button>
+                <button class="btn-main-nav" id="nav-history-btn" onclick="showHistoryView()">수강내역 조회</button>
                 <button class="btn-main-nav" id="nav-course-btn" onclick="showCourseView()" style="display: none; background-color: #6c757d;">수강신청 화면으로</button>
             </div>
             <div class="user-info">
@@ -52,6 +53,34 @@
                 <h2>수강 내역</h2>
                 <div id="my-courses"></div>
                 <button class="btn-submit" onclick="submitCourses()">모의 수강신청 제출</button>
+            </div>
+        </div>
+
+        <!-- ── 수강내역 조회 뷰 ── -->
+        <div id="history-view" class="container" style="display: none; flex-direction: column;">
+            <div class="section" style="width: 100%; box-sizing: border-box;">
+                <div class="qa-header">
+                    <h2 style="margin: 0; color: #0056b3;" id="history-title">수강내역 조회</h2>
+                    <p id="history-subtitle">제출된 수강신청 내역을 확인합니다.</p>
+                </div>
+                <div id="history-filter" style="margin-bottom: 20px; display: none;">
+                    <input type="text" id="history-search" placeholder="학생 이름 검색..." style="width:100%; padding:12px; border:1px solid #ddd; border-radius:6px; font-size:16px; box-sizing:border-box;">
+                </div>
+                <div id="history-list"></div>
+            </div>
+        </div>
+
+        <!-- ── 수강내역 조회 뷰 ── -->
+        <div id="history-view" class="container" style="display: none; flex-direction: column;">
+            <div class="section" style="width: 100%; box-sizing: border-box;">
+                <div class="qa-header">
+                    <h2 style="margin: 0; color: #0056b3;" id="history-title">수강내역 조회</h2>
+                    <p id="history-subtitle">제출된 수강신청 내역을 확인합니다.</p>
+                </div>
+                <div id="history-filter" style="margin-bottom: 20px; display: none;">
+                    <input type="text" id="history-search" placeholder="학생 이름 검색..." style="width:100%; padding:12px; border:1px solid #ddd; border-radius:6px; font-size:16px; box-sizing:border-box;">
+                </div>
+                <div id="history-list"></div>
             </div>
         </div>
 

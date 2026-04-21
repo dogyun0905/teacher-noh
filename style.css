@@ -86,6 +86,26 @@ body { font-family: sans-serif; background-color: #f8f9fa; margin: 20px; color: 
 .cart-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 999; }
 .cart-overlay.open { display: block; }
 
+/* ── 수강내역 조회 ── */
+.history-student-card { border: 1px solid #dee2e6; border-radius: 10px; margin-bottom: 12px; overflow: hidden; }
+.history-student-header { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: #f8f9fa; cursor: pointer; user-select: none; }
+.history-student-header:hover { background: #e9ecef; }
+.history-student-name { font-weight: bold; font-size: 15px; display: flex; align-items: center; gap: 8px; }
+.history-student-meta { font-size: 13px; color: #868e96; }
+.history-student-body { display: none; padding: 16px; border-top: 1px solid #dee2e6; background: #fff; }
+.history-student-card.open .history-student-body { display: block; }
+.history-student-card.open .history-student-header { background: #e7f3ff; }
+.history-badge { font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 20px; }
+.history-badge.complete { background: #d4edda; color: #155724; }
+.history-badge.incomplete { background: #f8d7da; color: #721c24; }
+.history-group-row { display: flex; align-items: center; gap: 8px; margin: 10px 0 4px 0; }
+.history-group-label { font-size: 12px; font-weight: bold; color: #495057; background: #e9ecef; padding: 2px 8px; border-radius: 4px; }
+.history-count { font-size: 12px; font-weight: bold; padding: 2px 7px; border-radius: 4px; }
+.history-count.ok  { background: #d4edda; color: #155724; }
+.history-count.ng  { background: #f8d7da; color: #721c24; }
+.history-course-row { font-size: 14px; color: #333; padding: 4px 0 4px 8px; display: flex; align-items: center; gap: 6px; }
+.history-dot { color: #0056b3; font-weight: bold; }
+
 /* ── Q&A ── */
 .qa-header { margin-bottom: 20px; border-bottom: 2px solid #e9ecef; padding-bottom: 15px; }
 .qa-form-box { background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6; margin-bottom: 30px; }
@@ -260,6 +280,12 @@ body { font-family: sans-serif; background-color: #f8f9fa; margin: 20px; color: 
         border-radius: 50px;
         box-shadow: 0 4px 16px rgba(0,0,100,0.25);
     }
+
+    /* ── 수강내역 조회 모바일 ── */
+    .history-student-header { padding: 12px 14px; }
+    .history-student-name { font-size: 14px; }
+    .history-student-body { padding: 12px 14px; }
+    .history-course-row { font-size: 13px; }
 
     /* ── Q&A 모바일 ── */
     .qa-form-box { padding: 14px; }

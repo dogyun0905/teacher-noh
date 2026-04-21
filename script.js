@@ -232,8 +232,10 @@ function showApp() {
 
 function showQAView() {
     document.getElementById('course-view').style.display = 'none';
+    document.getElementById('history-view').style.display = 'none';
     document.getElementById('qa-view').style.display = 'flex';
     document.getElementById('nav-qa-btn').style.display = 'none';
+    document.getElementById('nav-history-btn').style.display = 'block';
     document.getElementById('nav-course-btn').style.display = 'block';
     document.getElementById('mobile-cart-btn').style.display = 'none';
 }
@@ -241,13 +243,137 @@ function showQAView() {
 function showCourseView() {
     document.getElementById('course-view').style.display = 'flex';
     document.getElementById('qa-view').style.display = 'none';
+    document.getElementById('history-view').style.display = 'none';
     document.getElementById('nav-qa-btn').style.display = 'block';
+    document.getElementById('nav-history-btn').style.display = 'block';
     document.getElementById('nav-course-btn').style.display = 'none';
     
     if(window.innerWidth <= 768) {
         document.getElementById('mobile-cart-btn').style.display = 'flex';
     }
 }
+function showHistoryView() {
+    document.getElementById('course-view').style.display = 'none';
+    document.getElementById('qa-view').style.display = 'none';
+    document.getElementById('history-view').style.display = 'flex';
+    document.getElementById('nav-qa-btn').style.display = 'block';
+    document.getElementById('nav-history-btn').style.display = 'none';
+    document.getElementById('nav-course-btn').style.display = 'block';
+    document.getElementById('mobile-cart-btn').style.display = 'none';
+    loadHistoryView();
+}
+
+function loadHistoryView() {
+    const listDiv = document.getElementById('history-list');
+    const filterDiv = document.getElementById('history-filter');
+    const subtitle = document.getElementById('history-subtitle');
+    listDiv.innerHTML = '<p style="color:#888; text-align:center; padding:30px;">불러오는 중...</p>';
+
+    if (currentUser === 'admin') {
+        // 관리자: 전체 학생 내역 조회
+        document.getElementById('history-title').innerText = '전체 학생 수강내역';
+        subtitle.innerText = '제출된 모든 학생의 수강신청 내역입니다.';
+        filterDiv.style.display = 'block';
+        db.collection('users').get().then(snapshot => {
+            const allStudents = [];
+            snapshot.forEach(doc => {
+                allStudents.push({ name: doc.id, ...doc.data() });
+            });
+            allStudents.sort((a, b) => (a.name > b.name ? 1 : -1));
+            renderHistoryAdmin(allStudents);
+            // 검색 기능
+            const searchEl = document.getElementById('history-search');
+            searchEl.oninput = function() {
+                const kw = this.value.toLowerCase();
+                const filtered = allStudents.filter(s => s.name.toLowerCase().includes(kw));
+                renderHistoryAdmin(filtered);
+            };
+        }).catch(e => {
+            listDiv.innerHTML = '<p style="color:#dc3545;">불러오기 실패: ' + e.message + '</p>';
+        });
+    } else {
+        // 일반 학생: 본인 내역
+        document.getElementById('history-title').innerText = '내 수강신청 내역';
+        subtitle.innerText = `${currentGrade}학년 ${currentUser}님의 제출 내역입니다.`;
+        filterDiv.style.display = 'none';
+        renderHistoryStudent(currentUser, currentGrade, myEnrolledCourses, listDiv);
+    }
+}
+
+function renderHistoryAdmin(students) {
+    const listDiv = document.getElementById('history-list');
+    listDiv.innerHTML = '';
+    if (students.length === 0) {
+        listDiv.innerHTML = '<p style="color:#888; text-align:center; padding:30px;">해당 학생이 없습니다.</p>';
+        return;
+    }
+    students.forEach(student => {
+        const grade = student.grade || '?';
+        const enrolled = student.courses || [];
+        const wrapper = document.createElement('div');
+        wrapper.className = 'history-student-card';
+        // 헤더 (이름 + 학년 + 펼치기)
+        const totalCount = enrolled.length;
+        const userRules = rules[grade] || {};
+        let complete = true;
+        for (let sem in userRules) for (let grp in userRules[sem]) {
+            const req = userRules[sem][grp];
+            const cur = enrolled.filter(c => c.semester === parseInt(sem) && c.group === grp).length;
+            if (cur !== req) complete = false;
+        }
+        const statusBadge = complete
+            ? '<span class="history-badge complete">제출완료</span>'
+            : '<span class="history-badge incomplete">미완료</span>';
+        wrapper.innerHTML = `
+            <div class="history-student-header" onclick="this.parentElement.classList.toggle('open')">
+                <div class="history-student-name">${grade}학년 ${student.name} ${statusBadge}</div>
+                <div class="history-student-meta">${totalCount}과목 ▾</div>
+            </div>
+            <div class="history-student-body"></div>
+        `;
+        const bodyDiv = wrapper.querySelector('.history-student-body');
+        renderHistoryStudent(student.name, grade, enrolled, bodyDiv);
+        listDiv.appendChild(wrapper);
+    });
+}
+
+function renderHistoryStudent(name, grade, enrolled, container) {
+    container.innerHTML = '';
+    if (!enrolled || enrolled.length === 0) {
+        container.innerHTML = '<p style="color:#aaa; font-size:13px; padding:10px 0;">수강신청 내역이 없습니다.</p>';
+        return;
+    }
+    const userRules = rules[grade] || {};
+    [1, 2].forEach(sem => {
+        const semCourses = enrolled.filter(c => c.semester === sem);
+        if (semCourses.length === 0) return;
+        const semHeader = document.createElement('div');
+        semHeader.className = 'semester-header';
+        semHeader.innerText = `${sem}학기`;
+        container.appendChild(semHeader);
+        // 그룹별로 묶기
+        const groups = [...new Set(semCourses.map(c => c.group))];
+        groups.forEach(grp => {
+            const grpCourses = semCourses.filter(c => c.group === grp);
+            const maxCount = (userRules[sem] && userRules[sem][grp]) ? userRules[sem][grp] : null;
+            const curCount = grpCourses.length;
+            const isOk = maxCount === null || curCount === maxCount;
+            const grpRow = document.createElement('div');
+            grpRow.className = 'history-group-row';
+            const grpLabel = grp === '지정' ? '지정' : `선택 ${grp}`;
+            const countLabel = maxCount ? `<span class="history-count ${isOk ? 'ok' : 'ng'}">${curCount}/${maxCount}</span>` : '';
+            grpRow.innerHTML = `<span class="history-group-label">${grpLabel}</span>${countLabel}`;
+            container.appendChild(grpRow);
+            grpCourses.forEach(course => {
+                const row = document.createElement('div');
+                row.className = 'history-course-row';
+                row.innerHTML = `<span class="history-dot">•</span> ${course.name}`;
+                container.appendChild(row);
+            });
+        });
+    });
+}
+
 
 function toggleMobileCart() {
     const cartSection = document.getElementById('cart-section');
