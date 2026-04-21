@@ -136,3 +136,12 @@ button { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; f
     .group-cards { grid-template-columns: 1fr; }
     .modal-content { width: 95%; margin: 5vh auto; }
 }
+
+/* 질문 게시판 디자인 */
+.qa-item { border-bottom: 1px solid #dee2e6; padding: 15px 0; }
+.qa-item:last-child { border-bottom: none; }
+.qa-title { font-weight: bold; font-size: 16px; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
+.qa-meta { font-size: 12px; color: #6c757d; margin-bottom: 10px; }
+.qa-content { font-size: 14px; margin-bottom: 10px; line-height: 1.5; white-space: pre-wrap; }
+.qa-answer { background-color: #e9ecef; padding: 12px; border-radius: 5px; font-size: 14px; margin-top: 15px; border-left: 4px solid #0056b3; }
+.private-badge { color: #dc3545; font-size: 12px; border: 1px solid #dc3545; padding: 2px 6px; border-radius: 4px; font-weight: normal; }

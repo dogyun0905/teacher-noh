@@ -1,4 +1,20 @@
-// ▼▼▼ 선생님께서 직접 확인하고 설정해주신 정확한 PDF 페이지 매핑 데이터 ▼▼▼
+// ▼▼▼ 1. 파이어베이스 설정 (선생님의 키 값으로 변경하세요) ▼▼▼
+const firebaseConfig = {
+  apiKey: "AIzaSyCRULkhtusZR65leAKbLBN-Hj1JXrhTPQA",
+  authDomain: "teacher-noh.firebaseapp.com",
+  projectId: "teacher-noh",
+  storageBucket: "teacher-noh.firebasestorage.app",
+  messagingSenderId: "756290469824",
+  appId: "1:756290469824:web:ffb1388973ff05e931d225"
+};
+
+// 파이어베이스 초기화
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+// ▲▲▲ 파이어베이스 설정 끝 ▲▲▲
+
+
+// ▼▼▼ 2. 선생님께서 확인하신 PDF 페이지 매핑 데이터 ▼▼▼
 const pageMapping = {
     '문학': 42, '대수': 55, '영어1': 72, '스포츠 생활 1': 138, '독서와 작문': 41, '미적분 1': 56, '영어 독해와 작문': 74, '스포츠 생활 2': 139, '스포츠 문화': 136, '스포츠 과학': 137,
     '문학과 영상': 44, '독서 토론과 글쓰기': 46, '주제 탐구 독서': 43, '언어생활 탐구': 48, '화법과 언어': 47, '언어생활과 한자': 201,
@@ -164,11 +180,15 @@ const courses = rawCourses.map(course => {
     return { ...course, pdfPage: pageMapping[course.name] || 1 };
 });
 
+// ▼▼▼ 3. 앱 전역 상태 변수 ▼▼▼
 let currentUser = localStorage.getItem('currentUser') || null;
 let currentGrade = parseInt(localStorage.getItem('currentGrade')) || 2;
-let usersData = JSON.parse(localStorage.getItem('usersData')) || {};
+let myEnrolledCourses = [];
+let qaData = [];
 
-function init() { if (currentUser) { showApp(); } else { showLogin(); } }
+function init() { 
+    if (currentUser) { showApp(); } else { showLogin(); } 
+}
 
 function login() {
     const username = document.getElementById('username-input').value.trim();
@@ -181,21 +201,6 @@ function login() {
     localStorage.setItem('currentUser', currentUser);
     localStorage.setItem('currentGrade', currentGrade);
     
-    if (!usersData[currentUser]) { usersData[currentUser] = []; }
-
-    usersData[currentUser] = usersData[currentUser].filter(enrolled => 
-        courses.some(valid => valid.name === enrolled.name && valid.group === enrolled.group)
-    );
-
-    usersData[currentUser] = usersData[currentUser].filter(c => c.grade === currentGrade && c.group !== '지정');
-    
-    const mandatoryCourses = courses.filter(c => c.grade === currentGrade && c.group === '지정');
-    mandatoryCourses.forEach(mandatory => {
-        usersData[currentUser].push(mandatory);
-    });
-    
-    saveData(); 
-    document.getElementById('username-input').value = '';
     showApp();
 }
 
@@ -206,13 +211,24 @@ function logout() {
     showLogin(); 
 }
 
-function showLogin() { document.getElementById('login-container').style.display = 'block'; document.getElementById('app-container').style.display = 'none'; }
+function showLogin() { 
+    document.getElementById('login-container').style.display = 'block'; 
+    document.getElementById('app-container').style.display = 'none'; 
+    document.getElementById('mobile-cart-btn').style.display = 'none'; 
+}
 
 function showApp() {
     document.getElementById('login-container').style.display = 'none';
     document.getElementById('app-container').style.display = 'block';
-    document.getElementById('user-greeting').innerText = `${currentGrade}학년 ${currentUser}님`;
-    render();
+    
+    if(window.innerWidth <= 768) {
+        document.getElementById('mobile-cart-btn').style.display = 'flex';
+    }
+
+    document.getElementById('user-greeting').innerText = currentUser === 'admin' ? '관리자 모드' : `${currentGrade}학년 ${currentUser}님`;
+    
+    loadMyCoursesFromDB();
+    listenToQABoard();
 }
 
 function toggleMobileCart() {
@@ -224,15 +240,61 @@ function toggleMobileCart() {
     }
 }
 
-function getEnrolledCount(semester, group) {
-    return (usersData[currentUser] || []).filter(c => c.semester === semester && c.group === group).length;
+// ▼▼▼ 4. 수강내역 DB 연동 로직 ▼▼▼
+function loadMyCoursesFromDB() {
+    if (currentUser === 'admin') {
+        myEnrolledCourses = [];
+        render();
+        return;
+    }
+
+    db.collection("users").doc(currentUser).get().then((doc) => {
+        if (doc.exists) {
+            myEnrolledCourses = doc.data().courses || [];
+            
+            // 유효하지 않은 과목 청소
+            myEnrolledCourses = myEnrolledCourses.filter(enrolled => 
+                courses.some(valid => valid.name === enrolled.name && valid.group === enrolled.group)
+            );
+            // 타 학년/과거 지정과목 청소
+            myEnrolledCourses = myEnrolledCourses.filter(c => c.grade === currentGrade && c.group !== '지정');
+        } else {
+            myEnrolledCourses = [];
+        }
+
+        // 현재 학년에 맞는 지정 과목 세팅
+        const mandatoryCourses = courses.filter(c => c.grade === currentGrade && c.group === '지정');
+        mandatoryCourses.forEach(mandatory => {
+            if (!myEnrolledCourses.some(e => e.id === mandatory.id)) {
+                myEnrolledCourses.push(mandatory);
+            }
+        });
+
+        saveMyCoursesToDB();
+        render();
+    }).catch((error) => {
+        console.error("수강 내역 불러오기 실패:", error);
+    });
 }
 
+function saveMyCoursesToDB() {
+    if (currentUser === 'admin') return;
+    db.collection("users").doc(currentUser).set({
+        grade: currentGrade,
+        courses: myEnrolledCourses
+    }).catch((error) => {
+        console.error("수강 내역 저장 실패:", error);
+    });
+}
+
+function getEnrolledCount(semester, group) {
+    return myEnrolledCourses.filter(c => c.semester === semester && c.group === group).length;
+}
+
+// ▼▼▼ 5. 화면 렌더링 로직 (과목 목록 & 수강 내역) ▼▼▼
 function render() {
-    let enrolledCourses = usersData[currentUser] || [];
-    
     const badge = document.getElementById('cart-count-badge');
-    if (badge) { badge.innerText = enrolledCourses.length; }
+    if (badge) { badge.innerText = myEnrolledCourses.length; }
 
     const courseListDiv = document.getElementById('course-list');
     const myCoursesDiv = document.getElementById('my-courses');
@@ -259,13 +321,8 @@ function render() {
                 semWrapper.innerHTML = `<div class="grade-header">${currentGrade}학년 ${semester}학기 과목</div>`;
                 courseListDiv.appendChild(semWrapper);
 
-                let groups = [...new Set(coursesInSem.map(c => c.group))];
-                
-                groups = groups.sort((a, b) => {
-                    if (a === '지정') return -1;
-                    if (b === '지정') return 1;
-                    return a.localeCompare(b);
-                });
+                // '지정' 그룹이 무조건 가장 먼저 나오도록 정렬 추가
+                let groups = ['지정', ...[...new Set(coursesInSem.map(c => c.group))].filter(g => g !== '지정')];
                 
                 groups.forEach(group => {
                     const coursesInGroup = coursesInSem.filter(c => c.group === group);
@@ -291,11 +348,11 @@ function render() {
                         groupCards.className = 'group-cards';
 
                         coursesInGroup.forEach(course => {
-                            const isEnrolled = enrolledCourses.some(e => e.id === course.id);
+                            const isEnrolled = myEnrolledCourses.some(e => e.id === course.id);
                             
                             let btnHtml = '';
-                            if (group === '지정') {
-                                btnHtml = `<button class="btn-disabled" disabled>필수지정</button>`;
+                            if (group === '지정' || currentUser === 'admin') {
+                                btnHtml = `<button class="btn-disabled" disabled>신청불가</button>`;
                             } else if (isEnrolled) {
                                 btnHtml = `<button class="btn-cancel" onclick="cancelCourse(${course.id})">취소</button>`;
                             } else if (currentCount >= maxCount) {
@@ -323,11 +380,11 @@ function render() {
         });
     }
 
-    if (enrolledCourses.length === 0) {
+    if (myEnrolledCourses.length === 0) {
         myCoursesDiv.innerHTML = '<p>내역 없음</p>';
     } else {
         [1, 2].forEach(semester => {
-            const semCourses = enrolledCourses.filter(c => c.semester === semester);
+            const semCourses = myEnrolledCourses.filter(c => c.semester === semester);
             if (semCourses.length > 0) {
                 const semHeader = document.createElement('div');
                 semHeader.className = 'semester-header';
@@ -340,7 +397,7 @@ function render() {
                     card.className = 'card';
                     card.style.marginBottom = '10px';
                     
-                    const cancelBtnHtml = isMandatory ? '' : `<button class="btn-cancel" onclick="cancelCourse(${course.id})" style="padding:4px; margin-top:5px; width:100%;">수강 취소</button>`;
+                    const cancelBtnHtml = (isMandatory || currentUser === 'admin') ? '' : `<button class="btn-cancel" onclick="cancelCourse(${course.id})" style="padding:4px; margin-top:5px; width:100%;">수강 취소</button>`;
                     
                     card.innerHTML = `
                         <div style="font-size:14px; font-weight:bold;">${course.name}</div>
@@ -355,11 +412,13 @@ function render() {
 }
 
 function enrollCourse(id) {
+    if (currentUser === 'admin') return;
+
     const course = courses.find(c => c.id === id);
     if (!course) return;
 
-    // 다른 학기 동일 과목 중복 수강 방지
-    const isAlreadyTaken = usersData[currentUser].some(e => e.name === course.name && e.id !== course.id);
+    // 타 학기 동일 과목 중복 수강 방지 (I군 등)
+    const isAlreadyTaken = myEnrolledCourses.some(e => e.name === course.name && e.id !== course.id);
     if (isAlreadyTaken) {
         alert(`'${course.name}' 과목은 다른 학기에서 이미 신청하셨습니다. 중복 수강은 불가능합니다.`);
         return;
@@ -374,25 +433,29 @@ function enrollCourse(id) {
         }
     }
 
-    if (!usersData[currentUser].some(e => e.id === id)) {
-        usersData[currentUser].push(course);
-        saveData();
+    if (!myEnrolledCourses.some(e => e.id === id)) {
+        myEnrolledCourses.push(course);
+        saveMyCoursesToDB();
         render();
     }
 }
 
 function cancelCourse(id) { 
-    const course = usersData[currentUser].find(e => e.id === id);
+    if (currentUser === 'admin') return;
+
+    const course = myEnrolledCourses.find(e => e.id === id);
     if (course && course.group === '지정') {
         alert('지정 과목은 취소할 수 없습니다.');
         return;
     }
-    usersData[currentUser] = usersData[currentUser].filter(e => e.id !== id); 
-    saveData(); 
+    myEnrolledCourses = myEnrolledCourses.filter(e => e.id !== id); 
+    saveMyCoursesToDB(); 
     render(); 
 }
 
 function submitCourses() {
+    if (currentUser === 'admin') return;
+
     const userRules = rules[currentGrade];
     let isComplete = true;
     let missingMessages = [];
@@ -409,15 +472,136 @@ function submitCourses() {
     }
 
     if (isComplete) {
+        // 최종 제출 후 잠금 해제 (학생들이 언제든 연습 가능)
         alert('축하합니다! 모든 조건을 완벽하게 충족하여 모의 수강신청 제출이 완료되었습니다.');
-        // 제출 후 잠금 기능 제거 (학생들이 언제든 다시 변경 가능)
     } else {
         alert('아직 조건이 부족합니다!\n\n[부족한 항목]\n' + missingMessages.join('\n'));
     }
 }
 
-function saveData() { localStorage.setItem('usersData', JSON.stringify(usersData)); }
+// ▼▼▼ 6. 파이어베이스 질문 게시판 로직 ▼▼▼
+function listenToQABoard() {
+    db.collection("qa").orderBy("timestamp", "desc").onSnapshot((querySnapshot) => {
+        qaData = [];
+        querySnapshot.forEach((doc) => {
+            let data = doc.data();
+            data.id = doc.id;
+            qaData.push(data);
+        });
+        renderQA();
+    });
+}
 
+function renderQA() {
+    const qaListDiv = document.getElementById('qa-list');
+    const qaFormDiv = document.getElementById('qa-form');
+
+    if (currentUser === 'admin') {
+        qaFormDiv.innerHTML = '<p style="color:#0056b3; font-weight:bold; margin:0;">관리자 계정입니다. 학생들의 질문을 확인하고 답변을 등록해 주세요.</p>';
+    } else {
+        qaFormDiv.innerHTML = `
+            <input type="text" id="qa-title-input" placeholder="질문 제목" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+            <textarea id="qa-content-input" rows="3" placeholder="궁금한 내용을 입력하세요" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"></textarea>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label style="font-size: 14px; cursor: pointer;"><input type="checkbox" id="qa-private-checkbox"> 선생님만 볼 수 있게 비공개 설정</label>
+                <button onclick="submitQuestion()" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">질문 등록</button>
+            </div>
+        `;
+    }
+
+    qaListDiv.innerHTML = '';
+    if (qaData.length === 0) {
+        qaListDiv.innerHTML = '<p style="color: #666;">등록된 질문이 없습니다.</p>';
+        return;
+    }
+
+    qaData.forEach(qa => {
+        const isMyPost = qa.author === currentUser;
+        const isAdmin = currentUser === 'admin';
+        const canView = !qa.isPrivate || isMyPost || isAdmin;
+        
+        const qaItem = document.createElement('div');
+        qaItem.className = 'qa-item';
+        
+        if (canView) {
+            let badgeHtml = qa.isPrivate ? '<span class="private-badge">비공개</span>' : '';
+            let answerHtml = '';
+            
+            if (qa.answer) {
+                answerHtml = `<div class="qa-answer"><strong style="color: #0056b3;">선생님 답변:</strong><br><div style="margin-top: 5px;">${qa.answer}</div></div>`;
+            } else if (isAdmin) {
+                answerHtml = `
+                    <div style="margin-top: 15px; background: #f1f3f5; padding: 15px; border-radius: 5px;">
+                        <textarea id="answer-input-${qa.id}" rows="2" style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; margin-bottom: 10px;" placeholder="답변을 입력하세요"></textarea>
+                        <button onclick="submitAnswer('${qa.id}')" style="background-color: #0056b3; color: white; padding: 8px 15px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">답변 등록</button>
+                    </div>
+                `;
+            } else {
+                answerHtml = `<div style="font-size: 13px; color: #888; margin-top: 15px; font-weight: bold;">답변 대기 중입니다.</div>`;
+            }
+
+            const displayAuthor = isAdmin ? qa.author : (isMyPost ? qa.author : '익명');
+
+            qaItem.innerHTML = `
+                <div class="qa-title">${qa.title} ${badgeHtml}</div>
+                <div class="qa-meta">작성자: ${displayAuthor} | 작성일: ${qa.date}</div>
+                <div class="qa-content">${qa.content}</div>
+                ${answerHtml}
+            `;
+        } else {
+            qaItem.innerHTML = `
+                <div class="qa-title" style="color: #6c757d;">🔒 비공개 질문입니다.</div>
+                <div class="qa-meta">작성일: ${qa.date}</div>
+            `;
+        }
+        qaListDiv.appendChild(qaItem);
+    });
+}
+
+function submitQuestion() {
+    const title = document.getElementById('qa-title-input').value.trim();
+    const content = document.getElementById('qa-content-input').value.trim();
+    const isPrivate = document.getElementById('qa-private-checkbox').checked;
+
+    if (title === '' || content === '') {
+        alert('제목과 내용을 모두 입력해주세요.');
+        return;
+    }
+
+    db.collection("qa").add({
+        author: currentUser,
+        title: title,
+        content: content,
+        isPrivate: isPrivate,
+        date: new Date().toLocaleDateString(),
+        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        answer: null
+    }).then(() => {
+        document.getElementById('qa-title-input').value = '';
+        document.getElementById('qa-content-input').value = '';
+        document.getElementById('qa-private-checkbox').checked = false;
+    }).catch((error) => {
+        console.error("질문 등록 실패:", error);
+    });
+}
+
+function submitAnswer(id) {
+    const answerInput = document.getElementById(`answer-input-${id}`);
+    const answerContent = answerInput.value.trim();
+
+    if (answerContent === '') {
+        alert('답변 내용을 입력해주세요.');
+        return;
+    }
+
+    db.collection("qa").doc(id).update({
+        answer: answerContent
+    }).catch((error) => {
+        console.error("답변 등록 실패:", error);
+    });
+}
+
+// ▼▼▼ 7. PDF 상세 보기 제어 로직 ▼▼▼
 function showDetail(id) {
     try {
         const course = courses.find(c => c.id === id);
@@ -442,8 +626,9 @@ function closeModal() {
     document.getElementById('modal').style.display = 'none'; 
 }
 
+// PDF.js 라이브러리 초기화 버그 수정 완료
 try {
-    const pdfjsLib = window['pdfjs-dist/build/pdf'] || window.pdfjsLib;
+    const pdfjsLib = window.pdfjsLib;
     
     if (pdfjsLib) {
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
