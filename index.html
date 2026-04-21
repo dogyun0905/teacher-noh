@@ -34,6 +34,15 @@
         
         <div class="container">
             <div class="left-panel">
+                <div class="section qa-top-section" style="margin-bottom: 20px; border: 2px solid #0056b3;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h2 style="margin: 0; color: #0056b3;">질문 게시판</h2>
+                        <span style="font-size: 13px; color: #666;">교사에게 궁금한 점을 남겨주세요.</span>
+                    </div>
+                    <div id="qa-form" style="margin-bottom: 20px;"></div>
+                    <div id="qa-list"></div>
+                </div>
+
                 <div class="section">
                     <h2>개설 과목 목록</h2>
                     <div class="filter-container">
@@ -41,25 +50,19 @@
                     </div>
                     <div id="course-list"></div>
                 </div>
-
-                <div class="section" style="margin-top: 20px;">
-                    <h2>질문 게시판</h2>
-                    <div id="qa-form" style="margin-bottom: 20px;"></div>
-                    <div id="qa-list"></div>
-                </div>
             </div>
 
             <div class="section" id="cart-section" style="display: flex; flex-direction: column;">
                 <button class="close-cart-btn" onclick="toggleMobileCart()">내역 숨기기</button>
                 <h2>수강 내역</h2>
                 <div id="my-courses" style="flex-grow: 1;"></div>
-                <button class="btn-submit" onclick="submitCourses()" style="margin-top: 20px; width: 100%; padding: 15px; font-size: 16px;">모의 수강신청</button>
+                <button class="btn-submit" onclick="submitCourses()" style="margin-top: 20px; width: 100%; padding: 15px; font-size: 16px;">모의 수강신청 제출</button>
             </div>
         </div>
     </div>
 
     <button id="mobile-cart-btn" class="mobile-cart-btn" onclick="toggleMobileCart()">
-        장바구니 <span id="cart-count-badge" class="badge">0</span>
+        🛒 수강 과목 <span id="cart-count-badge" class="badge">0</span>
     </button>
     <div id="cart-overlay" class="cart-overlay" onclick="toggleMobileCart()"></div>
 
