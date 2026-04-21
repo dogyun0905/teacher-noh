@@ -7,22 +7,19 @@ body { font-family: sans-serif; background-color: #f8f9fa; margin: 20px; }
 .left-panel { flex: 3; display: flex; flex-direction: column; min-width: 0; }
 #cart-section { flex: 1; position: sticky; top: 20px; max-height: 90vh; overflow-y: auto; min-width: 300px; }
 .section { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-#course-list { display: flex; flex-direction: column; gap: 30px; }
-.card { border: 1px solid #dee2e6; padding: 15px; border-radius: 5px; background-color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
-.card h4 { margin: 0 0 10px 0; color: #0056b3; }
-.button-group { display: flex; gap: 5px; margin-top: 10px; }
 
-button { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
-.btn-enroll { background-color: #28a745; color: white; flex: 1; }
-.btn-cancel { background-color: #dc3545; color: white; padding: 8px 15px; }
-.btn-detail { background-color: #6c757d; color: white; flex: 1; }
-.btn-disabled { background-color: #cccccc; color: #666666; flex: 1; cursor: not-allowed; }
-.btn-submit { background-color: #0056b3; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: background-color 0.2s; }
-.btn-submit:hover { background-color: #004494; }
+/* 수강신청 버튼 레이아웃 버그 수정 */
+.button-group { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
+.button-group button { flex: 1; padding: 10px 5px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; white-space: nowrap; }
+.btn-detail { background-color: #6c757d; color: white; }
+.btn-enroll { background-color: #28a745; color: white; }
+.btn-cancel { background-color: #dc3545; color: white; }
+.btn-disabled { background-color: #cccccc; color: #666666; cursor: not-allowed; }
 
-/* 메인 기능 이동 버튼 강조 스타일 */
-.btn-main-nav { background-color: #17a2b8; color: white; padding: 12px 25px; border-radius: 8px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.15); transition: transform 0.2s, background-color 0.2s; }
-.btn-main-nav:hover { background-color: #138496; transform: translateY(-2px); }
+/* 메인 네비게이션 버튼 */
+.btn-main-nav { background-color: #17a2b8; color: white; padding: 12px 25px; border-radius: 8px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.15); border: none; cursor: pointer; }
+.btn-main-nav:hover { background-color: #138496; }
+.btn-cancel-top { background-color: #dc3545; color: white; padding: 8px 15px; border-radius: 4px; border: none; cursor: pointer; }
 
 #search-input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
 .grade-header { background-color: #343a40; color: white; padding: 12px 15px; border-radius: 5px; font-size: 18px; font-weight: bold; }
@@ -31,33 +28,24 @@ button { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; f
 .progress-text { font-size: 14px; color: #dc3545; }
 .progress-text.complete { color: #28a745; }
 .group-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-.semester-header { background-color: #0056b3; color: white; padding: 8px 12px; border-radius: 4px; font-size: 14px; font-weight: bold; margin-top: 20px; margin-bottom: 10px; }
-.semester-header:first-child { margin-top: 0; }
+
 .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
 .modal-content { background-color: white; margin: 5vh auto; padding: 20px; border-radius: 8px; width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 
-/* 모바일 환경 대응 버튼 및 화면 넓이 자동화 */
 @media (max-width: 768px) {
     .container { flex-direction: column; }
     .left-panel { flex: none; width: 100%; }
-    .header-area { flex-direction: column; align-items: flex-start; }
-    .header-area > div { width: 100%; flex-direction: column; align-items: stretch; gap: 10px; }
-    .btn-main-nav { width: 100%; padding: 15px; font-size: 16px; }
-    #cart-section {
-        position: fixed !important; bottom: -100% !important; left: 0; width: 100%; z-index: 1000;
-        transition: bottom 0.3s ease-in-out; border-radius: 25px 25px 0 0; margin: 0 !important;
-    }
+    .btn-main-nav { width: 100%; margin-bottom: 10px; }
+    #cart-section { position: fixed !important; bottom: -100% !important; left: 0; width: 100%; z-index: 1000; transition: bottom 0.3s ease-in-out; }
     #cart-section.open { bottom: 0 !important; }
     .mobile-cart-btn { display: flex; position: fixed; bottom: 25px; right: 25px; z-index: 990; }
     .group-cards { grid-template-columns: 1fr; }
-    .modal-content { width: 95%; margin: 5vh auto; }
 }
 
-/* 질문 게시판 디자인 */
+/* Q&A 스타일 */
 .qa-item { border-bottom: 1px solid #dee2e6; padding: 20px 0; }
-.qa-item:last-child { border-bottom: none; }
-.qa-title { font-weight: bold; font-size: 18px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; color: #333; }
+.qa-title { font-weight: bold; font-size: 18px; margin-bottom: 8px; display: flex; justify-content: space-between; }
 .qa-meta { font-size: 13px; color: #6c757d; margin-bottom: 15px; }
-.qa-content { font-size: 15px; margin-bottom: 15px; line-height: 1.6; white-space: pre-wrap; color: #444; }
-.qa-answer { background-color: #eef2f7; padding: 15px; border-radius: 6px; font-size: 14px; margin-top: 15px; border-left: 4px solid #0056b3; line-height: 1.5; }
-.private-badge { color: #dc3545; font-size: 12px; border: 1px solid #dc3545; padding: 3px 8px; border-radius: 4px; font-weight: normal; }
+.qa-content { font-size: 15px; margin-bottom: 15px; white-space: pre-wrap; }
+.qa-answer { background-color: #eef2f7; padding: 15px; border-radius: 6px; margin-top: 15px; border-left: 4px solid #0056b3; }
+.private-badge { color: #dc3545; font-size: 12px; border: 1px solid #dc3545; padding: 3px 8px; border-radius: 4px; }
