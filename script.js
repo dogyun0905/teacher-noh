@@ -503,9 +503,12 @@ function renderQA() {
         qaFormDiv.innerHTML = `
             <input type="text" id="qa-title-input" placeholder="질문 제목" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
             <textarea id="qa-content-input" rows="4" placeholder="궁금한 내용을 자유롭게 작성해주세요." style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;"></textarea>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label style="font-size: 15px; cursor: pointer; color: #444;"><input type="checkbox" id="qa-private-checkbox"> 선생님만 볼 수 있게 비공개 설정</label>
-                <button onclick="submitQuestion()" style="background-color: #28a745; color: white; padding: 12px 25px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 15px;">질문 등록</button>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+                <label style="font-size: 15px; cursor: pointer; color: #444;">
+                    <input type="checkbox" id="qa-private-checkbox" onchange="document.getElementById('qa-password-input').style.display = this.checked ? 'block' : 'none'"> 선생님만 볼 수 있게 비공개 설정
+                </label>
+                <input type="password" id="qa-password-input" placeholder="비밀번호 설정" style="display: none; padding: 10px; border: 1px solid #ccc; border-radius: 4px; width: 150px; font-size: 15px;">
+                <button onclick="submitQuestion()" style="background-color: #28a745; color: white; padding: 12px 25px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 15px; margin-left: auto;">질문 등록</button>
             </div>
         `;
     }
@@ -516,18 +519,40 @@ function renderQA() {
         return;
     }
 
+    const isAdmin = currentUser === 'admin';
+
     qaData.forEach(qa => {
-        const isMyPost = qa.author === currentUser;
-        const isAdmin = currentUser === 'admin';
-        const canView = !qa.isPrivate || isMyPost || isAdmin;
-        
         const qaItem = document.createElement('div');
         qaItem.className = 'qa-item';
         
-        if (canView) {
-            let badgeHtml = qa.isPrivate ? '<span class="private-badge">비공개</span>' : '';
+        // 삭제 버튼 생성 (관리자 전용)
+        let deleteBtnHtml = isAdmin ? `<button onclick="deleteQuestion('${qa.id}')" style="background-color: #dc3545; color: white; padding: 6px 12px; border: none; border-radius: 4px; font-size: 13px; font-weight: bold; cursor: pointer; margin-left: 15px;">질문 삭제</button>` : '';
+
+        // 비공개 글이면서 관리자가 아닌 경우 (비밀번호 확인 필요)
+        if (qa.isPrivate && !isAdmin) {
+            qaItem.innerHTML = `
+                <div class="qa-title" style="color: #6c757d; display: flex; justify-content: space-between; width: 100%;">
+                    <span>🔒 비공개 질문입니다.</span>
+                    ${deleteBtnHtml}
+                </div>
+                <div class="qa-meta">작성일: ${qa.date}</div>
+                
+                <div id="locked-content-${qa.id}" style="margin-top: 10px; display: flex; gap: 10px; align-items: center;">
+                    <input type="password" id="pwd-${qa.id}" placeholder="비밀번호 입력" style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 150px;">
+                    <button onclick="checkPassword('${qa.id}', '${qa.password || ''}')" style="padding: 8px 15px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">확인</button>
+                </div>
+                
+                <div id="unlocked-content-${qa.id}" style="display: none; margin-top: 15px; padding-top: 15px; border-top: 1px dashed #ccc;">
+                    <div class="qa-title">${qa.title} <span class="private-badge">비공개</span></div>
+                    <div class="qa-meta">작성자: ${qa.author === currentUser ? qa.author : '익명'} | 작성일: ${qa.date}</div>
+                    <div class="qa-content">${qa.content}</div>
+                    ${qa.answer ? `<div class="qa-answer"><strong style="color: #0056b3;">선생님 답변:</strong><br><div style="margin-top: 8px;">${qa.answer}</div></div>` : `<div style="font-size: 13px; color: #888; margin-top: 15px; font-weight: bold;">답변 대기 중입니다.</div>`}
+                </div>
+            `;
+        } 
+        // 공개 글이거나 관리자인 경우 (바로 확인 가능)
+        else {
             let answerHtml = '';
-            
             if (qa.answer) {
                 answerHtml = `<div class="qa-answer"><strong style="color: #0056b3;">선생님 답변:</strong><br><div style="margin-top: 8px;">${qa.answer}</div></div>`;
             } else if (isAdmin) {
@@ -541,18 +566,17 @@ function renderQA() {
                 answerHtml = `<div style="font-size: 13px; color: #888; margin-top: 15px; font-weight: bold;">답변 대기 중입니다.</div>`;
             }
 
-            const displayAuthor = isAdmin ? qa.author : (isMyPost ? qa.author : '익명');
+            const displayAuthor = isAdmin ? qa.author : (qa.author === currentUser ? qa.author : '익명');
+            let badgeHtml = qa.isPrivate ? '<span class="private-badge">비공개</span>' : '';
 
             qaItem.innerHTML = `
-                <div class="qa-title">${qa.title} ${badgeHtml}</div>
+                <div class="qa-title" style="display: flex; justify-content: space-between; width: 100%; align-items: flex-start;">
+                    <div>${qa.title} ${badgeHtml}</div>
+                    ${deleteBtnHtml}
+                </div>
                 <div class="qa-meta">작성자: ${displayAuthor} | 작성일: ${qa.date}</div>
                 <div class="qa-content">${qa.content}</div>
                 ${answerHtml}
-            `;
-        } else {
-            qaItem.innerHTML = `
-                <div class="qa-title" style="color: #6c757d;">비공개 질문입니다.</div>
-                <div class="qa-meta">작성일: ${qa.date}</div>
             `;
         }
         qaListDiv.appendChild(qaItem);
@@ -563,9 +587,17 @@ function submitQuestion() {
     const title = document.getElementById('qa-title-input').value.trim();
     const content = document.getElementById('qa-content-input').value.trim();
     const isPrivate = document.getElementById('qa-private-checkbox').checked;
+    
+    const passwordInput = document.getElementById('qa-password-input');
+    const password = passwordInput ? passwordInput.value.trim() : '';
 
     if (title === '' || content === '') {
         alert('제목과 내용을 모두 입력해주세요.');
+        return;
+    }
+
+    if (isPrivate && password === '') {
+        alert('비공개 설정 시 비밀번호를 반드시 입력해주세요.');
         return;
     }
 
@@ -574,6 +606,7 @@ function submitQuestion() {
         title: title,
         content: content,
         isPrivate: isPrivate,
+        password: password,
         date: new Date().toLocaleDateString(),
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         answer: null
@@ -581,6 +614,11 @@ function submitQuestion() {
         document.getElementById('qa-title-input').value = '';
         document.getElementById('qa-content-input').value = '';
         document.getElementById('qa-private-checkbox').checked = false;
+        
+        if (passwordInput) {
+            passwordInput.value = '';
+            passwordInput.style.display = 'none';
+        }
         alert('질문이 등록되었습니다.');
     }).catch((error) => {
         console.error("질문 등록 실패:", error);
@@ -602,6 +640,28 @@ function submitAnswer(id) {
         console.error("답변 등록 실패:", error);
     });
 }
+
+// 비밀번호 확인 로직
+window.checkPassword = function(id, correctPwd) {
+    const inputPwd = document.getElementById(`pwd-${id}`).value;
+    if (inputPwd === correctPwd) {
+        document.getElementById(`locked-content-${id}`).style.display = 'none';
+        document.getElementById(`unlocked-content-${id}`).style.display = 'block';
+    } else {
+        alert('비밀번호가 일치하지 않습니다.');
+    }
+};
+
+// 교사 질문 삭제 로직
+window.deleteQuestion = function(id) {
+    if (confirm('이 질문을 정말 삭제하시겠습니까?')) {
+        db.collection("qa").doc(id).delete().then(() => {
+            alert('질문이 정상적으로 삭제되었습니다.');
+        }).catch((error) => {
+            console.error("질문 삭제 실패:", error);
+        });
+    }
+};
 
 function showDetail(id) {
     try {
