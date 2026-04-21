@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>김해고 모의 수강신청 프로그램</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="style">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -34,21 +34,29 @@
         
         <div class="container">
             <div class="left-panel">
-                <div class="section qa-top-section" style="margin-bottom: 20px; border: 2px solid #0056b3;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h2 style="margin: 0; color: #0056b3;">질문 게시판</h2>
-                        <span style="font-size: 13px; color: #666;">교사에게 궁금한 점을 남겨주세요.</span>
-                    </div>
-                    <div id="qa-form" style="margin-bottom: 20px;"></div>
-                    <div id="qa-list"></div>
+                <div class="tab-container">
+                    <button class="tab-button active" id="tab-btn-course" onclick="switchTab('course')">개설 과목 목록</button>
+                    <button class="tab-button" id="tab-btn-qa" onclick="switchTab('qa')">Q&A 질문 게시판</button>
                 </div>
 
-                <div class="section">
-                    <h2>개설 과목 목록</h2>
-                    <div class="filter-container">
-                        <input type="text" id="search-input" placeholder="과목명이나 설명을 검색하세요...">
+                <div id="tab-course" class="tab-content active">
+                    <div class="section">
+                        <div class="filter-container">
+                            <input type="text" id="search-input" placeholder="과목명이나 설명을 검색하세요...">
+                        </div>
+                        <div id="course-list"></div>
                     </div>
-                    <div id="course-list"></div>
+                </div>
+
+                <div id="tab-qa" class="tab-content">
+                    <div class="section qa-top-section">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h2 style="margin: 0; color: #0056b3;">질문 게시판</h2>
+                            <span style="font-size: 13px; color: #666;">교사에게 궁금한 점을 남겨주세요.</span>
+                        </div>
+                        <div id="qa-form" style="margin-bottom: 20px;"></div>
+                        <div id="qa-list"></div>
+                    </div>
                 </div>
             </div>
 
@@ -62,7 +70,7 @@
     </div>
 
     <button id="mobile-cart-btn" class="mobile-cart-btn" onclick="toggleMobileCart()">
-        🛒 수강 과목 <span id="cart-count-badge" class="badge">0</span>
+        수강 내역 보기 <span id="cart-count-badge" class="badge">0</span>
     </button>
     <div id="cart-overlay" class="cart-overlay" onclick="toggleMobileCart()"></div>
 
@@ -81,6 +89,6 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="script"></script>
 </body>
 </html>

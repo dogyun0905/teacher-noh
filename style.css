@@ -16,7 +16,14 @@ body { font-family: sans-serif; background-color: #f8f9fa; margin: 20px; }
 }
 
 .section { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.qa-top-section { background-color: #f0f7ff; }
+.qa-top-section { background-color: #f0f7ff; border: 2px solid #0056b3; }
+
+/* 탭 메뉴 디자인 */
+.tab-container { display: flex; gap: 10px; margin-bottom: 20px; }
+.tab-button { flex: 1; padding: 15px; background-color: #e9ecef; border: none; border-radius: 8px 8px 0 0; font-size: 16px; font-weight: bold; color: #495057; cursor: pointer; transition: background-color 0.3s; }
+.tab-button.active { background-color: #0056b3; color: white; box-shadow: 0 -3px 5px rgba(0,0,0,0.1); }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
 
 #course-list { display: flex; flex-direction: column; gap: 30px; }
 .card { border: 1px solid #dee2e6; padding: 15px; border-radius: 5px; background-color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
@@ -59,6 +66,9 @@ button { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; f
 
 /* 질문 게시판 세부 디자인 */
 .qa-item { border-bottom: 1px solid #dee2e6; padding: 15px 0; }
-.qa-title { font-weight: bold; font-size: 16px; margin-bottom: 5px; }
-.qa-answer { background-color: #eef2f7; padding: 12px; border-radius: 5px; margin-top: 10px; border-left: 4px solid #0056b3; }
-.private-badge { color: #dc3545; font-size: 12px; border: 1px solid #dc3545; padding: 2px 6px; border-radius: 4px; }
+.qa-item:last-child { border-bottom: none; }
+.qa-title { font-weight: bold; font-size: 16px; margin-bottom: 5px; display: flex; align-items: center; gap: 10px; }
+.qa-meta { font-size: 12px; color: #6c757d; margin-bottom: 10px; }
+.qa-content { font-size: 14px; margin-bottom: 10px; line-height: 1.5; white-space: pre-wrap; }
+.qa-answer { background-color: #e9ecef; padding: 12px; border-radius: 5px; font-size: 14px; margin-top: 15px; border-left: 4px solid #0056b3; }
+.private-badge { color: #dc3545; font-size: 12px; border: 1px solid #dc3545; padding: 2px 6px; border-radius: 4px; font-weight: normal; }
