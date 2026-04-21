@@ -28,6 +28,115 @@ const rules = {
     3: { 1: { 'E': 8, 'G': 1, 'I': 1 }, 2: { 'F': 8, 'H': 1, 'I': 1 } }
 };
 
+
+// ── 과목별 학점 및 교과 매핑 (교육과정.xlsx 기준) ──────────────────────────────
+const creditMap = {
+    // 국어
+    '문학': 4, '독서와 작문': 4, '문학과 영상': 3, '독서 토론과 글쓰기': 3,
+    '주제 탐구 독서': 3, '언어생활 탐구': 3, '화법과 언어': 3,
+    // 수학
+    '대수': 4, '미적분 1': 4, '기하': 3, '경제 수학': 3, '인공지능 수학': 3,
+    '미적분Ⅱ': 3, '수학과제 탐구': 3, '산업수학': 3, '확률과 통계': 3,
+    // 영어
+    '영어1': 4, '영어 독해와 작문': 4, '심화 영어': 3, '미디어 영어': 3,
+    '세계 문화와 영어': 3, '실생활 영어 회화': 3, '영어 발표와 토론': 3,
+    '영미 문학 읽기': 3, '심화 영어 독해와 작문': 3, '영어Ⅱ': 3,
+    // 사회
+    '인문학과 윤리': 3, '세계시민과 지리': 3, '경제': 3, '정치': 3,
+    '사회문제 탐구': 3, '세계사': 3, '윤리와 사상': 3, '도시의 미래 탐구': 3,
+    '사회와 문화': 3, '현대사회와 윤리': 3, '한국지리 탐구': 3,
+    '기후변화와 지속가능한 세계': 3, '동아시아 역사 기행': 3,
+    '역사로 탐구하는 현대 세계': 3, '법과 사회': 3, '윤리문제 탐구': 3,
+    '금융과 경제생활': 3, '여행지리': 3, '후마니타스': 3,
+    // 과학
+    '물리학': 3, '화학': 3, '생명과학': 3, '지구과학': 3,
+    '역학과 에너지': 3, '물질과 에너지': 3, '세포와 물질대사': 3,
+    '지구시스템과학': 3, '기후변화와 환경생태': 3, '전자기와 양자': 3,
+    '화학 반응의 세계': 3, '생물의 유전': 3, '행성우주과학': 3,
+    '융합과학 탐구': 3, '프런티어 사이언스': 3,
+    // 정보·기술
+    '정보': 3, '데이터 과학': 3, '소프트웨어와 생활': 3, '정보과학': 3,
+    '창의공학설계': 3,
+    // 제2외국어
+    '일본어': 3, '중국어': 3, '일본어 회화': 3, '중국어 회화': 3,
+    '중국 문화': 3, '일본 문화': 3, '심화 중국어': 3, '심화 일본어': 3,
+    // 한문
+    '한문 고전 읽기': 3, '언어생활과 한자': 3,
+    // 체육
+    '스포츠 생활 1': 2, '스포츠 생활 2': 2, '스포츠 문화': 1, '스포츠 과학': 1,
+    // 예술
+    '음악 감상과 비평': 2, '미술 감상과 비평': 2, '음악 연주와 창작': 2, '미술 창작': 2,
+    // 교양
+    '지속가능한 삶과 공동체 생활탐구': 2, '보건 진로 탐색': 2,
+    '자기 주도적인 삶과 미래 역량 탐구': 2,
+};
+
+const subjectMap = {
+    // 국어
+    '문학': '국어', '독서와 작문': '국어', '문학과 영상': '국어',
+    '독서 토론과 글쓰기': '국어', '주제 탐구 독서': '국어',
+    '언어생활 탐구': '국어', '화법과 언어': '국어',
+    // 수학
+    '대수': '수학', '미적분 1': '수학', '기하': '수학', '경제 수학': '수학',
+    '인공지능 수학': '수학', '미적분Ⅱ': '수학', '수학과제 탐구': '수학',
+    '산업수학': '수학', '확률과 통계': '수학',
+    // 영어
+    '영어1': '영어', '영어 독해와 작문': '영어', '심화 영어': '영어',
+    '미디어 영어': '영어', '세계 문화와 영어': '영어', '실생활 영어 회화': '영어',
+    '영어 발표와 토론': '영어', '영미 문학 읽기': '영어',
+    '심화 영어 독해와 작문': '영어', '영어Ⅱ': '영어',
+    // 사회
+    '인문학과 윤리': '사회', '세계시민과 지리': '사회', '경제': '사회',
+    '정치': '사회', '사회문제 탐구': '사회', '세계사': '사회',
+    '윤리와 사상': '사회', '도시의 미래 탐구': '사회', '사회와 문화': '사회',
+    '현대사회와 윤리': '사회', '한국지리 탐구': '사회',
+    '기후변화와 지속가능한 세계': '사회', '동아시아 역사 기행': '사회',
+    '역사로 탐구하는 현대 세계': '사회', '법과 사회': '사회',
+    '윤리문제 탐구': '사회', '금융과 경제생활': '사회', '여행지리': '사회',
+    '후마니타스': '사회',
+    // 과학
+    '물리학': '과학', '화학': '과학', '생명과학': '과학', '지구과학': '과학',
+    '역학과 에너지': '과학', '물질과 에너지': '과학', '세포와 물질대사': '과학',
+    '지구시스템과학': '과학', '기후변화와 환경생태': '과학', '전자기와 양자': '과학',
+    '화학 반응의 세계': '과학', '생물의 유전': '과학', '행성우주과학': '과학',
+    '융합과학 탐구': '과학', '프런티어 사이언스': '과학',
+    // 정보·기술
+    '정보': '정보', '데이터 과학': '정보', '소프트웨어와 생활': '정보',
+    '정보과학': '정보', '창의공학설계': '기술·가정',
+    // 제2외국어
+    '일본어': '제2외국어', '중국어': '제2외국어', '일본어 회화': '제2외국어',
+    '중국어 회화': '제2외국어', '중국 문화': '제2외국어', '일본 문화': '제2외국어',
+    '심화 중국어': '제2외국어', '심화 일본어': '제2외국어',
+    // 한문
+    '한문 고전 읽기': '한문', '언어생활과 한자': '한문',
+    // 체육
+    '스포츠 생활 1': '체육', '스포츠 생활 2': '체육',
+    '스포츠 문화': '체육', '스포츠 과학': '체육',
+    // 예술
+    '음악 감상과 비평': '예술', '미술 감상과 비평': '예술',
+    '음악 연주와 창작': '예술', '미술 창작': '예술',
+    // 교양
+    '지속가능한 삶과 공동체 생활탐구': '교양', '보건 진로 탐색': '교양',
+    '자기 주도적인 삶과 미래 역량 탐구': '교양',
+};
+
+// 표시할 교과 순서 및 색상
+const subjectOrder = ['국어','수학','영어','사회','과학','정보','기술·가정','제2외국어','한문','체육','예술','교양'];
+const subjectColors = {
+    '국어':      { bg: '#fff0f0', border: '#e74c3c', text: '#c0392b' },
+    '수학':      { bg: '#f0f4ff', border: '#3498db', text: '#2980b9' },
+    '영어':      { bg: '#f0fff4', border: '#27ae60', text: '#1e8449' },
+    '사회':      { bg: '#fffbf0', border: '#f39c12', text: '#d68910' },
+    '과학':      { bg: '#f5f0ff', border: '#9b59b6', text: '#7d3c98' },
+    '정보':      { bg: '#f0fffe', border: '#1abc9c', text: '#148f77' },
+    '기술·가정': { bg: '#fff8f0', border: '#e67e22', text: '#ca6f1e' },
+    '제2외국어': { bg: '#fff5f0', border: '#e67e22', text: '#ca6f1e' },
+    '한문':      { bg: '#fafff0', border: '#8bc34a', text: '#558b2f' },
+    '체육':      { bg: '#f0faff', border: '#2ecc71', text: '#239b56' },
+    '예술':      { bg: '#fdf0ff', border: '#e91e63', text: '#c2185b' },
+    '교양':      { bg: '#f5f5f5', border: '#95a5a6', text: '#717d7e' },
+};
+
 const rawCourses = [
     { id: 1001, grade: 2, semester: 1, group: '지정', name: '문학', desc: '필수 지정 과목입니다.' },
     { id: 1002, grade: 2, semester: 1, group: '지정', name: '대수', desc: '필수 지정 과목입니다.' },
@@ -172,7 +281,12 @@ const rawCourses = [
 ];
 
 const courses = rawCourses.map(course => {
-    return { ...course, pdfPage: pageMapping[course.name] || 1 };
+    return {
+        ...course,
+        pdfPage: pageMapping[course.name] || 1,
+        credit:  creditMap[course.name] || 2,
+        subject: subjectMap[course.name] || '기타',
+    };
 });
 
 let currentUser = localStorage.getItem('currentUser') || null;
@@ -343,6 +457,30 @@ function renderHistoryStudent(name, grade, enrolled, container) {
         container.innerHTML = '<p style="color:#aaa; font-size:13px; padding:10px 0;">수강신청 내역이 없습니다.</p>';
         return;
     }
+    // 교과별 학점 요약 (인라인 렌더)
+    const summaryEl = document.createElement('div');
+    container.appendChild(summaryEl);
+    (function renderInlineSummary(el, list) {
+        const totals = {};
+        list.forEach(c => {
+            const s = c.subject || subjectMap[c.name] || '기타';
+            const cr = c.credit || creditMap[c.name] || 2;
+            totals[s] = (totals[s] || 0) + cr;
+        });
+        const total = Object.values(totals).reduce((a,b)=>a+b,0);
+        let h = `<div class="credit-summary-wrap" style="margin-bottom:14px;">`;
+        h += `<div class="credit-summary-title">📚 교과별 학점 <span class="credit-total-badge">총 ${total}학점</span></div>`;
+        h += `<div class="credit-summary-grid">`;
+        subjectOrder.forEach(sub => {
+            if (!totals[sub]) return;
+            const col = subjectColors[sub] || subjectColors['기타'];
+            h += `<div class="credit-chip" style="background:${col.bg}; border:1.5px solid ${col.border};">`;
+            h += `<span class="credit-chip-sub" style="color:${col.text};">${sub}</span>`;
+            h += `<span class="credit-chip-val" style="color:${col.text};">${totals[sub]}학점</span></div>`;
+        });
+        h += `</div></div>`;
+        el.innerHTML = h;
+    })(summaryEl, enrolled);
     const userRules = rules[grade] || {};
     [1, 2].forEach(sem => {
         const semCourses = enrolled.filter(c => c.semester === sem);
@@ -365,9 +503,12 @@ function renderHistoryStudent(name, grade, enrolled, container) {
             grpRow.innerHTML = `<span class="history-group-label">${grpLabel}</span>${countLabel}`;
             container.appendChild(grpRow);
             grpCourses.forEach(course => {
+                const cr3 = course.credit || creditMap[course.name] || 2;
+                const sub3 = course.subject || subjectMap[course.name] || '기타';
+                const col3 = subjectColors[sub3] || subjectColors['기타'];
                 const row = document.createElement('div');
                 row.className = 'history-course-row';
-                row.innerHTML = `<span class="history-dot">•</span> ${course.name}`;
+                row.innerHTML = `<span class="history-dot">•</span> ${course.name} <span class="course-credit-badge" style="background:${col3.bg}; color:${col3.text}; border:1px solid ${col3.border};">${cr3}학점</span>`;
                 container.appendChild(row);
             });
         });
@@ -423,6 +564,41 @@ function saveMyCoursesToDB() {
 
 function getEnrolledCount(semester, group) {
     return myEnrolledCourses.filter(c => c.semester === semester && c.group === group).length;
+}
+
+
+// ── 교과별 학점 합계 요약 ────────────────────────────────────────────────────
+function renderSubjectSummary(enrolled, containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    // 교과별 집계
+    const totals = {};
+    enrolled.forEach(c => {
+        const sub = c.subject || subjectMap[c.name] || '기타';
+        const cr  = c.credit  || creditMap[c.name]  || 2;
+        totals[sub] = (totals[sub] || 0) + cr;
+    });
+
+    const totalAll = Object.values(totals).reduce((a, b) => a + b, 0);
+    if (totalAll === 0) { container.innerHTML = ''; return; }
+
+    let html = `<div class="credit-summary-wrap">
+        <div class="credit-summary-title">📚 교과별 학점 현황 <span class="credit-total-badge">총 ${totalAll}학점</span></div>
+        <div class="credit-summary-grid">`;
+
+    subjectOrder.forEach(sub => {
+        if (!totals[sub]) return;
+        const col = subjectColors[sub] || subjectColors['기타'];
+        html += `
+            <div class="credit-chip" style="background:${col.bg}; border:1.5px solid ${col.border};">
+                <span class="credit-chip-sub" style="color:${col.text};">${sub}</span>
+                <span class="credit-chip-val" style="color:${col.text};">${totals[sub]}학점</span>
+            </div>`;
+    });
+
+    html += `</div></div>`;
+    container.innerHTML = html;
 }
 
 function render() {
@@ -498,8 +674,12 @@ function render() {
 
                             const card = document.createElement('div');
                             card.className = 'card';
+                            const col = subjectColors[course.subject] || subjectColors['기타'];
                             card.innerHTML = `
-                                <div><h4 style="color: #0056b3;">${course.name}</h4></div>
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:4px;">
+                                    <h4 style="color:#0056b3; margin:0;">${course.name}</h4>
+                                    <span class="course-credit-badge" style="background:${col.bg}; color:${col.text}; border:1px solid ${col.border};">${course.credit}학점</span>
+                                </div>
                                 <div class="button-group">
                                     <button class="btn-detail" onclick="showDetail(${course.id})">상세</button>
                                     ${btnHtml}
@@ -514,6 +694,9 @@ function render() {
             }
         });
     }
+
+    // 교과별 학점 요약
+    renderSubjectSummary(myEnrolledCourses, 'credit-summary-cart');
 
     if (myEnrolledCourses.length === 0) {
         myCoursesDiv.innerHTML = '<p>내역 없음</p>';
@@ -534,8 +717,14 @@ function render() {
                     
                     const cancelBtnHtml = (isMandatory || currentUser === 'admin') ? '' : `<button class="btn-cancel" onclick="cancelCourse(${course.id})" style="margin-top:8px; width:100%; padding:8px; font-size:13px; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">수강 취소</button>`;
                     
+                    const cr = course.credit || creditMap[course.name] || 2;
+                    const sub = course.subject || subjectMap[course.name] || '기타';
+                    const col2 = subjectColors[sub] || subjectColors['기타'];
                     card.innerHTML = `
-                        <div style="font-size:14px; font-weight:bold; word-break:keep-all;">${course.name}</div>
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:4px;">
+                            <div style="font-size:14px; font-weight:bold; word-break:keep-all;">${course.name}</div>
+                            <span class="course-credit-badge" style="background:${col2.bg}; color:${col2.text}; border:1px solid ${col2.border}; flex-shrink:0;">${cr}학점</span>
+                        </div>
                         <div style="font-size:12px; color:#666; margin-top:3px;">${course.group === '지정' ? '필수지정' : `선택 ${course.group}`}</div>
                         ${cancelBtnHtml}
                     `;
