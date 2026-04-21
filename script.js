@@ -166,7 +166,7 @@ const rawCourses = [
     { id: 125, grade: 3, semester: 1, group: 'I', name: '지속가능한 삶과 공동체 생활탐구', desc: '지속가능한 삶과 공동체 생활탐구 과목입니다.' },
     { id: 126, grade: 3, semester: 2, group: 'I', name: '지속가능한 삶과 공동체 생활탐구', desc: '지속가능한 삶과 공동체 생활탐구 과목입니다.' },
     { id: 127, grade: 3, semester: 1, group: 'I', name: '보건 진로 탐색', desc: '보건 진로 탐색 과목입니다.' },
-    { id: 128, grade: 3, semester: 2, group: 'I', name: '보건 진로 탐색', 보건 진로 탐색 과목입니다.' },
+    { id: 128, grade: 3, semester: 2, group: 'I', name: '보건 진로 탐색', desc: '보건 진로 탐색 과목입니다.' },
     { id: 129, grade: 3, semester: 1, group: 'I', name: '자기 주도적인 삶과 미래 역량 탐구', desc: '자기 주도적인 삶과 미래 역량 탐구 과목입니다.' },
     { id: 130, grade: 3, semester: 2, group: 'I', name: '자기 주도적인 삶과 미래 역량 탐구', desc: '자기 주도적인 삶과 미래 역량 탐구 과목입니다.' }
 ];
@@ -202,7 +202,6 @@ function logout() {
     currentUser = null; 
     localStorage.clear();
     
-    // 이전 사용자 데이터 강제 초기화 (버그 수정)
     myEnrolledCourses = [];
     qaData = [];
     document.getElementById('username-input').value = '';
@@ -220,25 +219,33 @@ function showApp() {
     document.getElementById('login-container').style.display = 'none';
     document.getElementById('app-container').style.display = 'block';
     
-    if(window.innerWidth <= 768) {
-        document.getElementById('mobile-cart-btn').style.display = 'flex';
-    }
-
     document.getElementById('user-greeting').innerText = currentUser === 'admin' ? '관리자 모드' : `${currentGrade}학년 ${currentUser}님`;
     
+    // 무조건 수강신청 화면이 기본으로 보이도록 초기화
+    showCourseView();
     loadMyCoursesFromDB();
     listenToQABoard();
 }
 
-// 탭 전환 기능 (버그 수정)
-function switchTab(tabName) {
-    document.getElementById('tab-course').classList.remove('active');
-    document.getElementById('tab-qa').classList.remove('active');
-    document.getElementById('tab-btn-course').classList.remove('active');
-    document.getElementById('tab-btn-qa').classList.remove('active');
+// Q&A 화면으로 전환하는 함수
+function showQAView() {
+    document.getElementById('course-view').style.display = 'none';
+    document.getElementById('qa-view').style.display = 'flex';
+    document.getElementById('nav-qa-btn').style.display = 'none';
+    document.getElementById('nav-course-btn').style.display = 'block';
+    document.getElementById('mobile-cart-btn').style.display = 'none';
+}
 
-    document.getElementById(`tab-${tabName}`).classList.add('active');
-    document.getElementById(`tab-btn-${tabName}`).classList.add('active');
+// 수강신청 화면으로 전환하는 함수
+function showCourseView() {
+    document.getElementById('course-view').style.display = 'flex';
+    document.getElementById('qa-view').style.display = 'none';
+    document.getElementById('nav-qa-btn').style.display = 'block';
+    document.getElementById('nav-course-btn').style.display = 'none';
+    
+    if(window.innerWidth <= 768) {
+        document.getElementById('mobile-cart-btn').style.display = 'flex';
+    }
 }
 
 function toggleMobileCart() {
@@ -250,9 +257,7 @@ function toggleMobileCart() {
     }
 }
 
-// 수강내역 DB 연동 (지정 과목 버그 수정)
 function loadMyCoursesFromDB() {
-    // 1. 통신 결과와 관계없이 지정 과목 우선 장착
     myEnrolledCourses = courses.filter(c => c.grade === currentGrade && c.group === '지정');
 
     if (currentUser === 'admin') {
@@ -260,7 +265,6 @@ function loadMyCoursesFromDB() {
         return;
     }
 
-    // 2. 이후 선택 과목 데이터베이스에서 조회 후 병합
     db.collection("users").doc(currentUser).get().then((doc) => {
         if (doc.exists) {
             let dbCourses = doc.data().courses || [];
@@ -276,7 +280,7 @@ function loadMyCoursesFromDB() {
         render();
     }).catch((error) => {
         console.error("수강 내역 불러오기 실패:", error);
-        render(); // 실패하더라도 최소 지정 과목은 화면에 표시되게 함
+        render();
     });
 }
 
@@ -294,7 +298,6 @@ function getEnrolledCount(semester, group) {
     return myEnrolledCourses.filter(c => c.semester === semester && c.group === group).length;
 }
 
-// 화면 렌더링 로직 (전체 복구)
 function render() {
     const badge = document.getElementById('cart-count-badge');
     if (badge) { badge.innerText = myEnrolledCourses.length; }
@@ -501,18 +504,18 @@ function renderQA() {
         qaFormDiv.innerHTML = '<p style="color:#0056b3; font-weight:bold; margin:0;">관리자 계정입니다. 학생들의 질문을 확인하고 답변을 등록해 주세요.</p>';
     } else {
         qaFormDiv.innerHTML = `
-            <input type="text" id="qa-title-input" placeholder="질문 제목" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            <textarea id="qa-content-input" rows="3" placeholder="궁금한 내용을 입력하세요" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"></textarea>
+            <input type="text" id="qa-title-input" placeholder="질문 제목" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
+            <textarea id="qa-content-input" rows="4" placeholder="궁금한 내용을 자유롭게 작성해주세요." style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;"></textarea>
             <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label style="font-size: 14px; cursor: pointer;"><input type="checkbox" id="qa-private-checkbox"> 선생님만 볼 수 있게 비공개 설정</label>
-                <button onclick="submitQuestion()" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">질문 등록</button>
+                <label style="font-size: 15px; cursor: pointer; color: #444;"><input type="checkbox" id="qa-private-checkbox"> 선생님만 볼 수 있게 비공개 설정</label>
+                <button onclick="submitQuestion()" style="background-color: #28a745; color: white; padding: 12px 25px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 15px;">질문 등록</button>
             </div>
         `;
     }
 
     qaListDiv.innerHTML = '';
     if (qaData.length === 0) {
-        qaListDiv.innerHTML = '<p style="color: #666;">등록된 질문이 없습니다.</p>';
+        qaListDiv.innerHTML = '<p style="color: #666; text-align: center; padding: 20px;">등록된 질문이 없습니다.</p>';
         return;
     }
 
@@ -529,7 +532,7 @@ function renderQA() {
             let answerHtml = '';
             
             if (qa.answer) {
-                answerHtml = `<div class="qa-answer"><strong style="color: #0056b3;">선생님 답변:</strong><br><div style="margin-top: 5px;">${qa.answer}</div></div>`;
+                answerHtml = `<div class="qa-answer"><strong style="color: #0056b3;">선생님 답변:</strong><br><div style="margin-top: 8px;">${qa.answer}</div></div>`;
             } else if (isAdmin) {
                 answerHtml = `
                     <div style="margin-top: 15px; background: #f1f3f5; padding: 15px; border-radius: 5px;">
@@ -551,7 +554,7 @@ function renderQA() {
             `;
         } else {
             qaItem.innerHTML = `
-                <div class="qa-title" style="color: #6c757d;">비공개 질문입니다.</div>
+                <div class="qa-title" style="color: #6c757d;">🔒 비공개 질문입니다.</div>
                 <div class="qa-meta">작성일: ${qa.date}</div>
             `;
         }
@@ -581,6 +584,7 @@ function submitQuestion() {
         document.getElementById('qa-title-input').value = '';
         document.getElementById('qa-content-input').value = '';
         document.getElementById('qa-private-checkbox').checked = false;
+        alert('질문이 등록되었습니다.');
     }).catch((error) => {
         console.error("질문 등록 실패:", error);
     });
