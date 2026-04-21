@@ -3,17 +3,17 @@ body { font-family: sans-serif; background-color: #f8f9fa; margin: 20px; }
 .login-section input { width: 100%; padding: 12px; margin: 20px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
 .header-area { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto 20px auto; }
 .header-area h1 { margin: 0; color: #333; }
-.container { display: flex; gap: 20px; max-width: 1400px; margin: 0 auto; }
+.container { display: flex; gap: 20px; max-width: 1400px; margin: 0 auto; align-items: flex-start; }
 
-/* 데스크탑(PC) 환경: 오른쪽 수강내역 고정 (Sticky) */
-.container .section:first-child { flex: 3; }
-.container .section:last-child {
+/* 데스크탑(PC) 환경 레이아웃 분배 */
+.left-panel { flex: 3; display: flex; flex-direction: column; min-width: 0; }
+#cart-section {
     flex: 1;
     position: sticky;
     top: 20px;
-    align-self: flex-start;
     max-height: 90vh;
     overflow-y: auto;
+    min-width: 300px;
 }
 
 .section { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
@@ -48,16 +48,15 @@ button { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; f
 .cart-overlay { display: none; }
 .close-cart-btn { display: none; }
 
-/* ▼▼▼ 모바일 환경 전용 디자인 (강력한 덮어쓰기 적용) ▼▼▼ */
+/* 모바일 환경 전용 디자인 */
 @media (max-width: 768px) {
     .container { flex-direction: column; }
+    .left-panel { flex: none; width: 100%; }
 
-    /* 수강 내역 창을 아래에 숨겨진 '서랍' 형태로 바꿉니다 */
-    .container .section:last-child,
-    .container #cart-section {
-        position: fixed !important;  /* PC버전의 sticky를 강제로 취소 */
-        top: auto !important;        /* PC버전의 top 속성을 강제로 취소 */
-        bottom: -100% !important;    /* 화면 아래로 완전히 숨김 */
+    #cart-section {
+        position: fixed !important;
+        top: auto !important;
+        bottom: -100% !important;
         left: 0;
         width: 100%;
         max-height: 85vh !important;
@@ -71,12 +70,10 @@ button { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; f
         box-shadow: 0 -5px 15px rgba(0,0,0,0.2);
     }
 
-    /* 버튼을 누르면 서랍이 위로 쓱 올라옵니다 */
-    .container #cart-section.open {
+    #cart-section.open {
         bottom: 0 !important;
     }
 
-    /* 오른쪽 아래에 둥둥 떠 다니는 동그란 버튼 */
     .mobile-cart-btn {
         display: flex;
         position: fixed;
@@ -97,7 +94,6 @@ button { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; f
         transition: transform 0.2s;
     }
 
-    /* 담긴 과목 개수를 보여주는 빨간 동그라미 */
     .mobile-cart-btn .badge {
         background-color: #dc3545;
         color: white;
@@ -106,7 +102,6 @@ button { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; f
         font-size: 15px;
     }
 
-    /* 서랍이 열렸을 때 화면 배경을 어둡게 처리 */
     .cart-overlay {
         position: fixed;
         top: 0; left: 0; right: 0; bottom: 0;
@@ -118,7 +113,6 @@ button { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; f
         display: block;
     }
 
-    /* 서랍 닫기 버튼 */
     .close-cart-btn {
         display: block;
         width: 100%;
