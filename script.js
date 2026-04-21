@@ -195,6 +195,9 @@ function login() {
     
     if (username === '') { alert('이름 또는 학번을 입력해주세요.'); return; }
     
+    // Bug fix 4: 새 로그인 시 이전 사용자의 수강 내역 초기화
+    myEnrolledCourses = [];
+
     currentUser = username;
     currentGrade = parseInt(grade);
     localStorage.setItem('currentUser', currentUser);
@@ -226,8 +229,28 @@ function showApp() {
 
     document.getElementById('user-greeting').innerText = currentUser === 'admin' ? '관리자 모드' : `${currentGrade}학년 ${currentUser}님`;
     
+    // Bug fix 3: QnA 폼을 Firebase 연결 전에 즉시 렌더링하여 버튼이 바로 보이도록
+    renderQAForm();
     loadMyCoursesFromDB();
     listenToQABoard();
+}
+
+// Bug fix 3: QnA 입력 폼만 먼저 렌더링하는 함수
+function renderQAForm() {
+    const qaFormDiv = document.getElementById('qa-form');
+    if (!qaFormDiv) return;
+    if (currentUser === 'admin') {
+        qaFormDiv.innerHTML = '<p style="color:#0056b3; font-weight:bold; margin:0;">관리자 계정입니다. 학생들의 질문을 확인하고 답변을 등록해 주세요.</p>';
+    } else {
+        qaFormDiv.innerHTML = `
+            <input type="text" id="qa-title-input" placeholder="질문 제목" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
+            <textarea id="qa-content-input" rows="3" placeholder="궁금한 내용을 입력하세요" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"></textarea>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <label style="font-size: 14px; cursor: pointer;"><input type="checkbox" id="qa-private-checkbox"> 선생님만 볼 수 있게 비공개 설정</label>
+                <button onclick="submitQuestion()" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">질문 등록</button>
+            </div>
+        `;
+    }
 }
 
 function toggleMobileCart() {
@@ -247,32 +270,40 @@ function loadMyCoursesFromDB() {
         return;
     }
 
+    // Bug fix 2: 지정 과목을 먼저 세팅하여 Firebase 로딩 전에도 항상 보이도록
+    const mandatoryCourses = courses.filter(c => c.grade === currentGrade && c.group === '지정');
+    myEnrolledCourses = [...mandatoryCourses];
+    render(); // 지정 과목 먼저 렌더링
+
     db.collection("users").doc(currentUser).get().then((doc) => {
         if (doc.exists) {
-            myEnrolledCourses = doc.data().courses || [];
+            const savedCourses = doc.data().courses || [];
             
-            // 유효하지 않은 과목 청소
-            myEnrolledCourses = myEnrolledCourses.filter(enrolled => 
-                courses.some(valid => valid.name === enrolled.name && valid.group === enrolled.group)
+            // 유효하지 않은 과목, 타 학년, 지정과목 청소
+            const validSaved = savedCourses.filter(enrolled => 
+                courses.some(valid => valid.name === enrolled.name && valid.group === enrolled.group) &&
+                enrolled.grade === currentGrade &&
+                enrolled.group !== '지정'
             );
-            // 타 학년/과거 지정과목 청소
-            myEnrolledCourses = myEnrolledCourses.filter(c => c.grade === currentGrade && c.group !== '지정');
-        } else {
-            myEnrolledCourses = [];
-        }
 
-        // 현재 학년에 맞는 지정 과목 세팅
-        const mandatoryCourses = courses.filter(c => c.grade === currentGrade && c.group === '지정');
-        mandatoryCourses.forEach(mandatory => {
-            if (!myEnrolledCourses.some(e => e.id === mandatory.id)) {
-                myEnrolledCourses.push(mandatory);
-            }
-        });
+            // 지정 과목은 항상 현재 학년 기준으로 고정
+            myEnrolledCourses = [...mandatoryCourses];
+
+            // 유효한 선택 과목 추가 (중복 방지)
+            validSaved.forEach(course => {
+                if (!myEnrolledCourses.some(e => e.id === course.id)) {
+                    myEnrolledCourses.push(course);
+                }
+            });
+        } else {
+            myEnrolledCourses = [...mandatoryCourses];
+        }
 
         saveMyCoursesToDB();
         render();
     }).catch((error) => {
         console.error("수강 내역 불러오기 실패:", error);
+        render(); // 실패해도 지정 과목은 유지
     });
 }
 
@@ -297,7 +328,10 @@ function render() {
 
     const courseListDiv = document.getElementById('course-list');
     const myCoursesDiv = document.getElementById('my-courses');
-    const keyword = document.getElementById('search-input').value.toLowerCase();
+    // Bug fix 1: app-container가 숨겨진 상태에서 render() 호출 시 null 방지
+    if (!courseListDiv || !myCoursesDiv) return;
+    const searchInput = document.getElementById('search-input');
+    const keyword = searchInput ? searchInput.value.toLowerCase() : '';
 
     courseListDiv.innerHTML = '';
     myCoursesDiv.innerHTML = '';
@@ -493,22 +527,9 @@ function listenToQABoard() {
 
 function renderQA() {
     const qaListDiv = document.getElementById('qa-list');
-    const qaFormDiv = document.getElementById('qa-form');
 
-    if (!qaListDiv || !qaFormDiv) return;
-
-    if (currentUser === 'admin') {
-        qaFormDiv.innerHTML = '<p style="color:#0056b3; font-weight:bold; margin:0;">관리자 계정입니다. 학생들의 질문을 확인하고 답변을 등록해 주세요.</p>';
-    } else {
-        qaFormDiv.innerHTML = `
-            <input type="text" id="qa-title-input" placeholder="질문 제목" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            <textarea id="qa-content-input" rows="3" placeholder="궁금한 내용을 입력하세요" style="width: 100%; padding: 10px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"></textarea>
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-                <label style="font-size: 14px; cursor: pointer;"><input type="checkbox" id="qa-private-checkbox"> 선생님만 볼 수 있게 비공개 설정</label>
-                <button onclick="submitQuestion()" style="background-color: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;">질문 등록</button>
-            </div>
-        `;
-    }
+    // Bug fix 3: 폼은 renderQAForm()에서 이미 처리하므로 여기서 덮어쓰지 않음
+    if (!qaListDiv) return;
 
     qaListDiv.innerHTML = '';
     if (qaData.length === 0) {
@@ -664,5 +685,7 @@ try {
 }
 
 window.onclick = function(event) { if (event.target == document.getElementById('modal')) closeModal(); }
-document.getElementById('search-input').addEventListener('input', render);
+// Bug fix 1: search-input은 로그인 후에만 존재하므로 render() 안에서 이벤트 등록
+const searchInputEl = document.getElementById('search-input');
+if (searchInputEl) { searchInputEl.addEventListener('input', render); }
 init();
