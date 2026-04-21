@@ -349,7 +349,7 @@ function showQAView() {
     document.getElementById('history-view').style.display = 'none';
     document.getElementById('qa-view').style.display = 'flex';
     document.getElementById('nav-qa-btn').style.display = 'none';
-    document.getElementById('nav-history-btn').style.display = 'block';
+    document.getElementById('nav-history-btn').style.display = 'none';
     document.getElementById('nav-course-btn').style.display = 'block';
     document.getElementById('mobile-cart-btn').style.display = 'none';
 }
@@ -370,7 +370,7 @@ function showHistoryView() {
     document.getElementById('course-view').style.display = 'none';
     document.getElementById('qa-view').style.display = 'none';
     document.getElementById('history-view').style.display = 'flex';
-    document.getElementById('nav-qa-btn').style.display = 'block';
+    document.getElementById('nav-qa-btn').style.display = 'none';
     document.getElementById('nav-history-btn').style.display = 'none';
     document.getElementById('nav-course-btn').style.display = 'block';
     document.getElementById('mobile-cart-btn').style.display = 'none';

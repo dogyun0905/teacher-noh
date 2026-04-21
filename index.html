@@ -29,7 +29,7 @@
                 <h1 id="main-title">김해고 모의 수강신청</h1>
                 <button class="btn-main-nav" id="nav-qa-btn" onclick="showQAView()">질문 게시판</button>
                 <button class="btn-main-nav" id="nav-history-btn" onclick="showHistoryView()">수강내역 조회</button>
-                <button class="btn-main-nav" id="nav-course-btn" onclick="showCourseView()" style="display: none; background-color: #6c757d;">수강신청 화면으로</button>
+                <button class="btn-main-nav" id="nav-course-btn" onclick="showCourseView()" style="display: none;">← 수강신청으로</button>
             </div>
             <div class="user-info">
                 <span id="user-greeting"></span>
@@ -51,6 +51,7 @@
             <div class="section" id="cart-section">
                 <button class="close-cart-btn" onclick="toggleMobileCart()">내역 숨기기</button>
                 <h2>수강 내역</h2>
+                <div id="credit-summary-cart"></div>
                 <div id="my-courses"></div>
                 <button class="btn-submit" onclick="submitCourses()">모의 수강신청 제출</button>
             </div>
