@@ -709,6 +709,7 @@ try {
             console.error('PDF 로드 실패:', error);
         });
 
+
         window.renderPage = function(pageNum) {
             if (!pdfDoc) {
                 setTimeout(() => { if(window.renderPage) window.renderPage(pageNum); }, 200);
@@ -718,21 +719,24 @@ try {
                 const canvas = document.getElementById('pdf-canvas');
                 if (!canvas) return;
                 const ctx = canvas.getContext('2d');
-                // 컨테이너 너비에 맞게 스케일 자동 계산
+                // 컨테이너 표시 너비 계산
                 const container = document.getElementById('pdf-container');
                 const containerWidth = container ? container.clientWidth - 30 : window.innerWidth - 40;
                 const baseViewport = page.getViewport({ scale: 1 });
-                const scale = Math.min(containerWidth / baseViewport.width, 1.5);
-                const viewport = page.getViewport({ scale });
+                const displayScale = Math.min(containerWidth / baseViewport.width, 1.5);
+                // devicePixelRatio 반영: 렌더링은 고해상도, 표시는 CSS로 축소
+                const dpr = window.devicePixelRatio || 1;
+                const renderScale = displayScale * dpr;
+                const viewport = page.getViewport({ scale: renderScale });
+                canvas.width  = viewport.width;
                 canvas.height = viewport.height;
-                canvas.width = viewport.width;
+                // CSS 크기는 표시 해상도로 고정 → 선명하게 보임
+                canvas.style.width  = (viewport.width  / dpr) + 'px';
+                canvas.style.height = (viewport.height / dpr) + 'px';
                 canvas.style.maxWidth = '100%';
-                canvas.style.height = 'auto';
                 page.render({ canvasContext: ctx, viewport: viewport });
             }).catch(e => console.error("페이지 렌더링 실패:", e));
         };
-    } else {
-        console.error("pdf 라이브러리를 찾을 수 없습니다.");
     }
 } catch (e) {
     console.error("PDF 초기화 중 에러 발생:", e);
