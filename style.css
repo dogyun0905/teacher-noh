@@ -1,51 +1,70 @@
-body { font-family: sans-serif; background-color: #f8f9fa; margin: 20px; }
+body { font-family: sans-serif; background-color: #f8f9fa; margin: 20px; color: #333; }
 .login-section { max-width: 400px; margin: 100px auto; background-color: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
 .login-section input { width: 100%; padding: 12px; margin: 20px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
-.header-area { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto 20px auto; flex-wrap: wrap; gap: 15px; }
+
+/* 헤더 레이아웃 */
+.header-area { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto 30px auto; border-bottom: 2px solid #dee2e6; padding-bottom: 15px; }
+.header-main-row { display: flex; align-items: center; gap: 20px; }
+.user-info { display: flex; gap: 15px; align-items: center; }
+#user-greeting { font-weight: bold; color: #555; }
+
+/* 메인 네비게이션 버튼 (질문 게시판 가기) */
+.btn-main-nav { background-color: #17a2b8; color: white; padding: 15px 30px; border-radius: 8px; font-size: 18px; font-weight: bold; border: none; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: 0.2s; }
+.btn-main-nav:hover { background-color: #138496; transform: translateY(-2px); }
+
+/* 컨테이너 */
 .container { display: flex; gap: 20px; max-width: 1400px; margin: 0 auto; align-items: flex-start; }
+.left-panel { flex: 3; min-width: 0; }
+#cart-section { flex: 1; position: sticky; top: 20px; max-height: 90vh; overflow-y: auto; min-width: 320px; }
+.section { background-color: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 1px solid #eee; }
 
-.left-panel { flex: 3; display: flex; flex-direction: column; min-width: 0; }
-#cart-section { flex: 1; position: sticky; top: 20px; max-height: 90vh; overflow-y: auto; min-width: 300px; }
-.section { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+/* 과목 카드 및 버튼 버그 수정 */
+.group-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+.card { border: 1px solid #dee2e6; padding: 18px; border-radius: 8px; background-color: #fff; display: flex; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.03); }
+.card h4 { margin: 0 0 12px 0; color: #0056b3; font-size: 16px; }
 
-/* 수강신청 버튼 레이아웃 버그 수정 */
-.button-group { display: flex; gap: 8px; margin-top: 10px; align-items: center; }
-.button-group button { flex: 1; padding: 10px 5px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; white-space: nowrap; }
+.button-group { display: flex; gap: 8px; margin-top: auto; width: 100%; }
+.button-group button { 
+    flex: 1 1 0; /* 버튼이 정확히 가로 길이를 반씩 나눠 갖도록 고정 */
+    padding: 10px 5px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; white-space: nowrap; 
+}
+
 .btn-detail { background-color: #6c757d; color: white; }
 .btn-enroll { background-color: #28a745; color: white; }
 .btn-cancel { background-color: #dc3545; color: white; }
-.btn-disabled { background-color: #cccccc; color: #666666; cursor: not-allowed; }
+.btn-disabled { background-color: #e9ecef; color: #adb5bd; cursor: not-allowed; }
+.btn-submit { background-color: #0056b3; color: white; padding: 15px; font-size: 16px; font-weight: bold; margin-top: 20px; width: 100%; border: none; border-radius: 8px; cursor: pointer; }
+.btn-cancel-top { background-color: #dc3545; color: white; padding: 8px 12px; border-radius: 4px; border: none; cursor: pointer; font-size: 13px; }
 
-/* 메인 네비게이션 버튼 */
-.btn-main-nav { background-color: #17a2b8; color: white; padding: 12px 25px; border-radius: 8px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.15); border: none; cursor: pointer; }
-.btn-main-nav:hover { background-color: #138496; }
-.btn-cancel-top { background-color: #dc3545; color: white; padding: 8px 15px; border-radius: 4px; border: none; cursor: pointer; }
+/* 검색창 */
+.filter-container { margin-bottom: 20px; }
+#search-input { width: 100%; padding: 12px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 15px; outline-color: #0056b3; }
 
-#search-input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-.grade-header { background-color: #343a40; color: white; padding: 12px 15px; border-radius: 5px; font-size: 18px; font-weight: bold; }
-.group-box { border: 2px solid #e9ecef; border-radius: 8px; padding: 20px; margin-bottom: 20px; background-color: #fcfcfc; }
-.group-title { font-size: 16px; font-weight: bold; color: #495057; margin-bottom: 15px; padding-bottom: 8px; border-bottom: 2px solid #0056b3; display: flex; justify-content: space-between; }
-.progress-text { font-size: 14px; color: #dc3545; }
-.progress-text.complete { color: #28a745; }
-.group-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
-.modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
-.modal-content { background-color: white; margin: 5vh auto; padding: 20px; border-radius: 8px; width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
-
-@media (max-width: 768px) {
-    .container { flex-direction: column; }
-    .left-panel { flex: none; width: 100%; }
-    .btn-main-nav { width: 100%; margin-bottom: 10px; }
-    #cart-section { position: fixed !important; bottom: -100% !important; left: 0; width: 100%; z-index: 1000; transition: bottom 0.3s ease-in-out; }
-    #cart-section.open { bottom: 0 !important; }
-    .mobile-cart-btn { display: flex; position: fixed; bottom: 25px; right: 25px; z-index: 990; }
-    .group-cards { grid-template-columns: 1fr; }
-}
+/* 수강내역 사이드바 카드 디자인 */
+#my-courses .card { margin-bottom: 12px; border-left: 5px solid #0056b3; }
+.semester-header { background-color: #f1f3f5; padding: 8px 12px; border-radius: 4px; font-weight: bold; margin: 20px 0 10px 0; color: #495057; font-size: 14px; }
 
 /* Q&A 스타일 */
-.qa-item { border-bottom: 1px solid #dee2e6; padding: 20px 0; }
-.qa-title { font-weight: bold; font-size: 18px; margin-bottom: 8px; display: flex; justify-content: space-between; }
-.qa-meta { font-size: 13px; color: #6c757d; margin-bottom: 15px; }
-.qa-content { font-size: 15px; margin-bottom: 15px; white-space: pre-wrap; }
-.qa-answer { background-color: #eef2f7; padding: 15px; border-radius: 6px; margin-top: 15px; border-left: 4px solid #0056b3; }
-.private-badge { color: #dc3545; font-size: 12px; border: 1px solid #dc3545; padding: 3px 8px; border-radius: 4px; }
+.qa-form-box { background: #f8f9fa; padding: 20px; border-radius: 8px; border: 1px solid #dee2e6; margin-bottom: 30px; }
+.qa-item { border-bottom: 1px solid #eee; padding: 20px 0; }
+.qa-title { font-weight: bold; font-size: 17px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+.qa-meta { font-size: 12px; color: #888; margin-bottom: 12px; }
+.qa-content { background: #fff; padding: 10px; border-radius: 4px; border: 1px solid #f0f0f0; margin-bottom: 15px; }
+.qa-answer { background-color: #e7f3ff; padding: 15px; border-radius: 6px; border-left: 4px solid #0056b3; font-size: 14px; }
+
+/* 상세 보기 모달 */
+.modal-content { background-color: white; margin: 5vh auto; padding: 25px; border-radius: 12px; width: 85%; height: 85vh; max-width: 1000px; display: flex; flex-direction: column; }
+.modal-header { display: flex; justify-content: space-between; margin-bottom: 15px; }
+#pdf-container { flex: 1; overflow-y: auto; background: #525659; border-radius: 6px; padding: 15px; text-align: center; }
+
+/* 모바일 대응 */
+@media (max-width: 768px) {
+    .header-area { flex-direction: column; align-items: flex-start; gap: 15px; }
+    .header-main-row { width: 100%; flex-direction: column; }
+    .btn-main-nav { width: 100%; text-align: center; }
+    .container { flex-direction: column; }
+    .group-cards { grid-template-columns: 1fr; }
+    #cart-section { position: fixed !important; bottom: -100% !important; left: 0; width: 100%; z-index: 1000; transition: bottom 0.3s; border-radius: 20px 20px 0 0; }
+    #cart-section.open { bottom: 0 !important; }
+    .mobile-cart-btn { display: flex; position: fixed; bottom: 20px; right: 20px; z-index: 999; }
+}
