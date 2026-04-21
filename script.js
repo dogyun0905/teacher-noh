@@ -404,13 +404,13 @@ function render() {
                     const isMandatory = course.group === '지정';
                     const card = document.createElement('div');
                     card.className = 'card';
-                    card.style.marginBottom = '10px';
+                    card.style.cssText = 'margin-bottom:8px; box-sizing:border-box; width:100%; min-width:0;';
                     
-                    const cancelBtnHtml = (isMandatory || currentUser === 'admin') ? '' : `<button class="btn-cancel" onclick="cancelCourse(${course.id})" style="padding:4px; margin-top:5px; width:100%;">수강 취소</button>`;
+                    const cancelBtnHtml = (isMandatory || currentUser === 'admin') ? '' : `<button class="btn-cancel" onclick="cancelCourse(${course.id})" style="margin-top:8px; width:100%; padding:8px; font-size:13px; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">수강 취소</button>`;
                     
                     card.innerHTML = `
-                        <div style="font-size:14px; font-weight:bold;">${course.name}</div>
-                        <div style="font-size:12px; color:#666;">${course.group === '지정' ? '필수지정' : `선택 ${course.group}`}</div>
+                        <div style="font-size:14px; font-weight:bold; word-break:keep-all;">${course.name}</div>
+                        <div style="font-size:12px; color:#666; margin-top:3px;">${course.group === '지정' ? '필수지정' : `선택 ${course.group}`}</div>
                         ${cancelBtnHtml}
                     `;
                     myCoursesDiv.appendChild(card);
