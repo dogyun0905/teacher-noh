@@ -510,13 +510,13 @@ function renderQA() {
         qaFormDiv.innerHTML = '<p style="color:#0056b3; font-weight:bold; margin:0;">관리자 계정입니다. 학생들의 질문을 확인하고 답변을 등록해 주세요.</p>';
     } else {
         qaFormDiv.innerHTML = `
-            <input type="text" id="qa-title-input" placeholder="질문 제목" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;">
-            <textarea id="qa-content-input" rows="4" placeholder="궁금한 내용을 자유롭게 작성해주세요." style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 15px;"></textarea>
+            <input type="text" id="qa-title-input" placeholder="질문 제목" style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px;">
+            <textarea id="qa-content-input" rows="4" placeholder="궁금한 내용을 자유롭게 작성해주세요." style="width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px;"></textarea>
             <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
                 <label style="font-size: 15px; cursor: pointer; color: #444;">
                     <input type="checkbox" id="qa-private-checkbox" onchange="document.getElementById('qa-password-input').style.display = this.checked ? 'block' : 'none'"> 선생님만 볼 수 있게 비공개 설정
                 </label>
-                <input type="password" id="qa-password-input" placeholder="비밀번호 설정" style="display: none; padding: 10px; border: 1px solid #ccc; border-radius: 4px; width: 150px; font-size: 15px;">
+                <input type="password" id="qa-password-input" placeholder="비밀번호 설정" style="display: none; padding: 10px; border: 1px solid #ccc; border-radius: 4px; width: 150px; font-size: 16px;">
                 <button onclick="submitQuestion()" style="background-color: #28a745; color: white; padding: 12px 25px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 15px; margin-left: auto;">질문 등록</button>
             </div>
         `;
