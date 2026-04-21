@@ -221,13 +221,11 @@ function showApp() {
     
     document.getElementById('user-greeting').innerText = currentUser === 'admin' ? '관리자 모드' : `${currentGrade}학년 ${currentUser}님`;
     
-    // 무조건 수강신청 화면이 기본으로 보이도록 초기화
     showCourseView();
     loadMyCoursesFromDB();
     listenToQABoard();
 }
 
-// Q&A 화면으로 전환하는 함수
 function showQAView() {
     document.getElementById('course-view').style.display = 'none';
     document.getElementById('qa-view').style.display = 'flex';
@@ -236,7 +234,6 @@ function showQAView() {
     document.getElementById('mobile-cart-btn').style.display = 'none';
 }
 
-// 수강신청 화면으로 전환하는 함수
 function showCourseView() {
     document.getElementById('course-view').style.display = 'flex';
     document.getElementById('qa-view').style.display = 'none';
@@ -554,7 +551,7 @@ function renderQA() {
             `;
         } else {
             qaItem.innerHTML = `
-                <div class="qa-title" style="color: #6c757d;">🔒 비공개 질문입니다.</div>
+                <div class="qa-title" style="color: #6c757d;">비공개 질문입니다.</div>
                 <div class="qa-meta">작성일: ${qa.date}</div>
             `;
         }

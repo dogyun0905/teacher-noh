@@ -2,21 +2,11 @@ body { font-family: sans-serif; background-color: #f8f9fa; margin: 20px; }
 .login-section { max-width: 400px; margin: 100px auto; background-color: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
 .login-section input { width: 100%; padding: 12px; margin: 20px 0; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 16px; }
 .header-area { display: flex; justify-content: space-between; align-items: center; max-width: 1400px; margin: 0 auto 20px auto; flex-wrap: wrap; gap: 15px; }
-.header-area h1 { margin: 0; color: #333; }
 .container { display: flex; gap: 20px; max-width: 1400px; margin: 0 auto; align-items: flex-start; }
 
 .left-panel { flex: 3; display: flex; flex-direction: column; min-width: 0; }
-#cart-section {
-    flex: 1;
-    position: sticky;
-    top: 20px;
-    max-height: 90vh;
-    overflow-y: auto;
-    min-width: 300px;
-}
-
+#cart-section { flex: 1; position: sticky; top: 20px; max-height: 90vh; overflow-y: auto; min-width: 300px; }
 .section { background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-
 #course-list { display: flex; flex-direction: column; gap: 30px; }
 .card { border: 1px solid #dee2e6; padding: 15px; border-radius: 5px; background-color: #fff; display: flex; flex-direction: column; justify-content: space-between; }
 .card h4 { margin: 0 0 10px 0; color: #0056b3; }
@@ -30,9 +20,9 @@ button { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; f
 .btn-submit { background-color: #0056b3; color: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: background-color 0.2s; }
 .btn-submit:hover { background-color: #004494; }
 
-/* 상단 화면 전환 버튼 전용 스타일 */
-.btn-nav { background-color: #17a2b8; color: white; padding: 8px 15px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-.btn-nav:hover { background-color: #138496; }
+/* 메인 기능 이동 버튼 강조 스타일 */
+.btn-main-nav { background-color: #17a2b8; color: white; padding: 12px 25px; border-radius: 8px; font-size: 18px; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.15); transition: transform 0.2s, background-color 0.2s; }
+.btn-main-nav:hover { background-color: #138496; transform: translateY(-2px); }
 
 #search-input { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
 .grade-header { background-color: #343a40; color: white; padding: 12px 15px; border-radius: 5px; font-size: 18px; font-weight: bold; }
@@ -41,27 +31,29 @@ button { padding: 8px 10px; border: none; border-radius: 4px; cursor: pointer; f
 .progress-text { font-size: 14px; color: #dc3545; }
 .progress-text.complete { color: #28a745; }
 .group-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-
+.semester-header { background-color: #0056b3; color: white; padding: 8px 12px; border-radius: 4px; font-size: 14px; font-weight: bold; margin-top: 20px; margin-bottom: 10px; }
+.semester-header:first-child { margin-top: 0; }
 .modal { display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5); }
 .modal-content { background-color: white; margin: 5vh auto; padding: 20px; border-radius: 8px; width: 400px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); }
 
-/* 모바일 환경 대응 */
+/* 모바일 환경 대응 버튼 및 화면 넓이 자동화 */
 @media (max-width: 768px) {
     .container { flex-direction: column; }
     .left-panel { flex: none; width: 100%; }
     .header-area { flex-direction: column; align-items: flex-start; }
+    .header-area > div { width: 100%; flex-direction: column; align-items: stretch; gap: 10px; }
+    .btn-main-nav { width: 100%; padding: 15px; font-size: 16px; }
     #cart-section {
-        position: fixed !important;
-        bottom: -100% !important;
-        left: 0; width: 100%; z-index: 1000;
-        transition: bottom 0.3s ease-in-out;
+        position: fixed !important; bottom: -100% !important; left: 0; width: 100%; z-index: 1000;
+        transition: bottom 0.3s ease-in-out; border-radius: 25px 25px 0 0; margin: 0 !important;
     }
     #cart-section.open { bottom: 0 !important; }
     .mobile-cart-btn { display: flex; position: fixed; bottom: 25px; right: 25px; z-index: 990; }
     .group-cards { grid-template-columns: 1fr; }
+    .modal-content { width: 95%; margin: 5vh auto; }
 }
 
-/* 질문 게시판 세부 디자인 */
+/* 질문 게시판 디자인 */
 .qa-item { border-bottom: 1px solid #dee2e6; padding: 20px 0; }
 .qa-item:last-child { border-bottom: none; }
 .qa-title { font-weight: bold; font-size: 18px; margin-bottom: 8px; display: flex; align-items: center; gap: 10px; color: #333; }
