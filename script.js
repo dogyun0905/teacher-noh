@@ -923,24 +923,35 @@ window.deleteQuestion = function(id) {
     }
 };
 
+let currentCourseId = null;
+let commentUnsubscribe = null;
+
 function showDetail(id) {
     try {
+        currentCourseId = id;
         const course = courses.find(c => c.id === id);
         document.getElementById('modal-title').innerText = course.name;
         document.getElementById('modal-category').innerText = `${course.grade}학년 / ${course.semester}학기 / ${course.group === '지정' ? '지정' : `선택 ${course.group}`}`;
         document.getElementById('modal').style.display = 'block';
+        document.getElementById('comment-input').value = '';
         const canvas = document.getElementById('pdf-canvas');
         if (canvas && window.renderPage) {
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             window.renderPage(course.pdfPage);
         }
+        loadComments(id);
     } catch (e) {
         console.error("상세보기 오류:", e);
     }
 }
 
-function closeModal() { document.getElementById('modal').style.display = 'none'; }
+function closeModal() {
+    document.getElementById('modal').style.display = 'none';
+    if (commentUnsubscribe) { commentUnsubscribe(); commentUnsubscribe = null; }
+    document.getElementById('comment-list').innerHTML = '';
+    currentCourseId = null;
+}
 
 try {
     const pdfjsLib = window.pdfjsLib;
@@ -978,6 +989,142 @@ try {
         };
     }
 } catch (e) { console.error("PDF 초기화 중 에러 발생:", e); }
+
+// ═══════════════════════════════════════════════════════
+// 과목별 댓글 기능
+// Firestore 컬렉션: courseComments/{courseId}/comments/{commentId}
+// ═══════════════════════════════════════════════════════
+
+function loadComments(courseId) {
+    if (commentUnsubscribe) { commentUnsubscribe(); commentUnsubscribe = null; }
+    const listEl = document.getElementById('comment-list');
+    listEl.innerHTML = '<p style="color:#aaa; font-size:13px; text-align:center; padding:16px 0;">불러오는 중...</p>';
+
+    commentUnsubscribe = db.collection('courseComments')
+        .doc(String(courseId))
+        .collection('comments')
+        .orderBy('timestamp', 'asc')
+        .onSnapshot(snapshot => {
+            const comments = [];
+            snapshot.forEach(doc => comments.push({ id: doc.id, ...doc.data() }));
+            renderComments(comments, courseId);
+        }, err => {
+            listEl.innerHTML = '<p style="color:#dc3545; font-size:13px;">댓글을 불러올 수 없습니다.</p>';
+        });
+}
+
+function renderComments(comments, courseId) {
+    const listEl = document.getElementById('comment-list');
+    listEl.innerHTML = '';
+
+    if (comments.length === 0) {
+        listEl.innerHTML = '<p style="color:#aaa; font-size:13px; text-align:center; padding:12px 0;">아직 댓글이 없습니다. 첫 댓글을 남겨보세요!</p>';
+        return;
+    }
+
+    comments.forEach(cm => {
+        const isAdmin = currentUser === 'admin';
+        const isMine  = cm.author === currentUser;
+        const dateStr = cm.timestamp ? new Date(cm.timestamp.toDate()).toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) : '';
+
+        const item = document.createElement('div');
+        item.className = 'comment-item';
+
+        // 삭제 버튼 (본인 or 관리자)
+        const delBtn = (isAdmin || isMine)
+            ? `<button class="comment-del-btn" onclick="deleteComment('${courseId}','${cm.id}')">삭제</button>`
+            : '';
+
+        // 답글 영역 (관리자만 작성 가능)
+        let replyHtml = '';
+        if (cm.reply) {
+            replyHtml = `
+                <div class="comment-reply">
+                    <span class="comment-reply-label">👨‍🏫 선생님 답변</span>
+                    <p class="comment-reply-text">${escapeHtml(cm.reply)}</p>
+                    ${isAdmin ? `<button class="comment-del-btn" style="margin-top:4px;" onclick="deleteReply('${courseId}','${cm.id}')">답변 삭제</button>` : ''}
+                </div>`;
+        } else if (isAdmin) {
+            replyHtml = `
+                <div class="comment-reply-form">
+                    <textarea id="reply-input-${cm.id}" rows="2" placeholder="답변을 입력하세요..."></textarea>
+                    <button class="comment-reply-submit" onclick="submitReply('${courseId}','${cm.id}')">답변 등록</button>
+                </div>`;
+        }
+
+        item.innerHTML = `
+            <div class="comment-header">
+                <span class="comment-author">${escapeHtml(cm.author)}</span>
+                <span class="comment-date">${dateStr}</span>
+                ${delBtn}
+            </div>
+            <p class="comment-text">${escapeHtml(cm.content)}</p>
+            ${replyHtml}
+        `;
+        listEl.appendChild(item);
+    });
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
+}
+
+function submitComment() {
+    const input = document.getElementById('comment-input');
+    const content = input.value.trim();
+    if (!content) { alert('댓글 내용을 입력해주세요.'); return; }
+    if (!currentCourseId) return;
+
+    const btn = document.querySelector('#course-comment-section .comment-submit-btn');
+    if (btn) btn.disabled = true;
+
+    db.collection('courseComments')
+        .doc(String(currentCourseId))
+        .collection('comments')
+        .add({
+            author:    currentUser,
+            content:   content,
+            reply:     null,
+            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+        })
+        .then(() => { input.value = ''; })
+        .catch(e => { console.error('댓글 등록 실패:', e); alert('등록에 실패했습니다.'); })
+        .finally(() => { if (btn) btn.disabled = false; });
+}
+
+function submitReply(courseId, commentId) {
+    const textarea = document.getElementById(`reply-input-${commentId}`);
+    const reply = textarea ? textarea.value.trim() : '';
+    if (!reply) { alert('답변 내용을 입력해주세요.'); return; }
+
+    db.collection('courseComments')
+        .doc(String(courseId))
+        .collection('comments')
+        .doc(commentId)
+        .update({ reply: reply })
+        .catch(e => { console.error('답변 등록 실패:', e); alert('등록에 실패했습니다.'); });
+}
+
+function deleteComment(courseId, commentId) {
+    if (!confirm('이 댓글을 삭제하시겠습니까?')) return;
+    db.collection('courseComments')
+        .doc(String(courseId))
+        .collection('comments')
+        .doc(commentId)
+        .delete()
+        .catch(e => console.error('댓글 삭제 실패:', e));
+}
+
+function deleteReply(courseId, commentId) {
+    if (!confirm('답변을 삭제하시겠습니까?')) return;
+    db.collection('courseComments')
+        .doc(String(courseId))
+        .collection('comments')
+        .doc(commentId)
+        .update({ reply: null })
+        .catch(e => console.error('답변 삭제 실패:', e));
+}
 
 window.onclick = function(event) { if (event.target == document.getElementById('modal')) closeModal(); }
 const _si = document.getElementById('search-input'); if (_si) _si.addEventListener('input', render);
