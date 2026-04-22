@@ -261,6 +261,15 @@ let currentGrade = parseInt(localStorage.getItem('currentGrade')) || 2;
 let myEnrolledCourses = [];
 let qaData = [];
 
+// 이름 뒤에 'admin' 접미사가 있으면 관리자로 판별
+function isAdminUser() {
+    return currentUser === 'admin' || (currentUser !== null && currentUser.endsWith('admin') && currentUser.length > 5);
+}
+function adminDisplayName() {
+    if (currentUser === 'admin') return '관리자';
+    return currentUser.slice(0, -5) + ' 선생님'; // 'admin' 5글자 제거
+}
+
 function init() { 
     if (currentUser) { showApp(); } else { showLogin(); } 
 }
@@ -276,7 +285,8 @@ function login() {
     if (window._qaUnsubscribe) { window._qaUnsubscribe(); window._qaUnsubscribe = null; }
 
     currentUser = username;
-    currentGrade = parseInt(grade);
+    // 관리자 계정은 학년 무관
+    currentGrade = isAdminUser() ? 2 : parseInt(grade);
     localStorage.setItem('currentUser', currentUser);
     localStorage.setItem('currentGrade', currentGrade);
     
@@ -303,7 +313,7 @@ function showApp() {
     document.getElementById('login-container').style.display = 'none';
     document.getElementById('app-container').style.display = 'block';
     
-    document.getElementById('user-greeting').innerText = currentUser === 'admin' ? '관리자 모드' : `${currentGrade}학년 ${currentUser}님`;
+    document.getElementById('user-greeting').innerText = isAdminUser() ? `${adminDisplayName()} (관리자)` : `${currentGrade}학년 ${currentUser}님`;
     
     showCourseView();
     loadMyCoursesFromDB();
@@ -349,7 +359,7 @@ function loadHistoryView() {
     const subtitle = document.getElementById('history-subtitle');
     listDiv.innerHTML = '<p style="color:#888; text-align:center; padding:30px;">불러오는 중...</p>';
 
-    if (currentUser === 'admin') {
+    if (isAdminUser()) {
         document.getElementById('history-title').innerText = '전체 학생 수강내역';
         subtitle.innerText = '제출된 모든 학생의 수강신청 내역입니다.';
         filterDiv.style.display = 'block';
@@ -488,7 +498,7 @@ function toggleMobileCart() {
 function loadMyCoursesFromDB() {
     myEnrolledCourses = courses.filter(c => c.grade === currentGrade && c.group === '지정');
 
-    if (currentUser === 'admin') {
+    if (isAdminUser()) {
         render();
         return;
     }
@@ -513,7 +523,7 @@ function loadMyCoursesFromDB() {
 }
 
 function saveMyCoursesToDB() {
-    if (currentUser === 'admin') return;
+    if (isAdminUser()) return;
     db.collection("users").doc(currentUser).set({
         grade: currentGrade,
         courses: myEnrolledCourses
@@ -619,7 +629,7 @@ function render() {
                             const isEnrolled = myEnrolledCourses.some(e => e.id === course.id);
                             
                             let btnHtml = '';
-                            if (group === '지정' || currentUser === 'admin') {
+                            if (group === '지정' || isAdminUser()) {
                                 btnHtml = `<button class="btn-disabled" disabled>신청불가</button>`;
                             } else if (isEnrolled) {
                                 btnHtml = `<button class="btn-cancel" onclick="cancelCourse(${course.id})">취소</button>`;
@@ -670,7 +680,7 @@ function render() {
                     card.className = 'card';
                     card.style.cssText = 'margin-bottom:8px; box-sizing:border-box; width:100%; min-width:0;';
                     
-                    const cancelBtnHtml = (isMandatory || currentUser === 'admin') ? '' : `<button class="btn-cancel" onclick="cancelCourse(${course.id})" style="margin-top:8px; width:100%; padding:8px; font-size:13px; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">수강 취소</button>`;
+                    const cancelBtnHtml = (isMandatory || isAdminUser()) ? '' : `<button class="btn-cancel" onclick="cancelCourse(${course.id})" style="margin-top:8px; width:100%; padding:8px; font-size:13px; font-weight:bold; border:none; border-radius:6px; cursor:pointer;">수강 취소</button>`;
                     
                     const cr = course.credit || creditMap[course.name] || 2;
                     card.innerHTML = `
@@ -689,7 +699,7 @@ function render() {
 }
 
 function enrollCourse(id) {
-    if (currentUser === 'admin') return;
+    if (isAdminUser()) return;
 
     const course = courses.find(c => c.id === id);
     if (!course) return;
@@ -717,7 +727,7 @@ function enrollCourse(id) {
 }
 
 function cancelCourse(id) { 
-    if (currentUser === 'admin') return;
+    if (isAdminUser()) return;
 
     const course = myEnrolledCourses.find(e => e.id === id);
     if (course && course.group === '지정') {
@@ -730,7 +740,7 @@ function cancelCourse(id) {
 }
 
 function submitCourses() {
-    if (currentUser === 'admin') return;
+    if (isAdminUser()) return;
 
     const userRules = rules[currentGrade];
     let isComplete = true;
@@ -773,7 +783,7 @@ function renderQA() {
 
     if (!qaListDiv || !qaFormDiv) return;
 
-    if (currentUser === 'admin') {
+    if (isAdminUser()) {
         qaFormDiv.innerHTML = '<p style="color:#0056b3; font-weight:bold; margin:0;">관리자 계정입니다. 학생들의 질문을 확인하고 답변을 등록해 주세요.</p>';
     } else {
         qaFormDiv.innerHTML = `
@@ -795,7 +805,7 @@ function renderQA() {
         return;
     }
 
-    const isAdmin = currentUser === 'admin';
+    const isAdmin = isAdminUser();
 
     qaData.forEach(qa => {
         const qaItem = document.createElement('div');
@@ -923,35 +933,24 @@ window.deleteQuestion = function(id) {
     }
 };
 
-let currentCourseId = null;
-let commentUnsubscribe = null;
-
 function showDetail(id) {
     try {
-        currentCourseId = id;
         const course = courses.find(c => c.id === id);
         document.getElementById('modal-title').innerText = course.name;
         document.getElementById('modal-category').innerText = `${course.grade}학년 / ${course.semester}학기 / ${course.group === '지정' ? '지정' : `선택 ${course.group}`}`;
         document.getElementById('modal').style.display = 'block';
-        document.getElementById('comment-input').value = '';
         const canvas = document.getElementById('pdf-canvas');
         if (canvas && window.renderPage) {
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             window.renderPage(course.pdfPage);
         }
-        loadComments(id);
     } catch (e) {
         console.error("상세보기 오류:", e);
     }
 }
 
-function closeModal() {
-    document.getElementById('modal').style.display = 'none';
-    if (commentUnsubscribe) { commentUnsubscribe(); commentUnsubscribe = null; }
-    document.getElementById('comment-list').innerHTML = '';
-    currentCourseId = null;
-}
+function closeModal() { document.getElementById('modal').style.display = 'none'; }
 
 try {
     const pdfjsLib = window.pdfjsLib;
@@ -989,142 +988,6 @@ try {
         };
     }
 } catch (e) { console.error("PDF 초기화 중 에러 발생:", e); }
-
-// ═══════════════════════════════════════════════════════
-// 과목별 댓글 기능
-// Firestore 컬렉션: courseComments/{courseId}/comments/{commentId}
-// ═══════════════════════════════════════════════════════
-
-function loadComments(courseId) {
-    if (commentUnsubscribe) { commentUnsubscribe(); commentUnsubscribe = null; }
-    const listEl = document.getElementById('comment-list');
-    listEl.innerHTML = '<p style="color:#aaa; font-size:13px; text-align:center; padding:16px 0;">불러오는 중...</p>';
-
-    commentUnsubscribe = db.collection('courseComments')
-        .doc(String(courseId))
-        .collection('comments')
-        .orderBy('timestamp', 'asc')
-        .onSnapshot(snapshot => {
-            const comments = [];
-            snapshot.forEach(doc => comments.push({ id: doc.id, ...doc.data() }));
-            renderComments(comments, courseId);
-        }, err => {
-            listEl.innerHTML = '<p style="color:#dc3545; font-size:13px;">댓글을 불러올 수 없습니다.</p>';
-        });
-}
-
-function renderComments(comments, courseId) {
-    const listEl = document.getElementById('comment-list');
-    listEl.innerHTML = '';
-
-    if (comments.length === 0) {
-        listEl.innerHTML = '<p style="color:#aaa; font-size:13px; text-align:center; padding:12px 0;">아직 댓글이 없습니다. 첫 댓글을 남겨보세요!</p>';
-        return;
-    }
-
-    comments.forEach(cm => {
-        const isAdmin = currentUser === 'admin';
-        const isMine  = cm.author === currentUser;
-        const dateStr = cm.timestamp ? new Date(cm.timestamp.toDate()).toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' }) : '';
-
-        const item = document.createElement('div');
-        item.className = 'comment-item';
-
-        // 삭제 버튼 (본인 or 관리자)
-        const delBtn = (isAdmin || isMine)
-            ? `<button class="comment-del-btn" onclick="deleteComment('${courseId}','${cm.id}')">삭제</button>`
-            : '';
-
-        // 답글 영역 (관리자만 작성 가능)
-        let replyHtml = '';
-        if (cm.reply) {
-            replyHtml = `
-                <div class="comment-reply">
-                    <span class="comment-reply-label">👨‍🏫 선생님 답변</span>
-                    <p class="comment-reply-text">${escapeHtml(cm.reply)}</p>
-                    ${isAdmin ? `<button class="comment-del-btn" style="margin-top:4px;" onclick="deleteReply('${courseId}','${cm.id}')">답변 삭제</button>` : ''}
-                </div>`;
-        } else if (isAdmin) {
-            replyHtml = `
-                <div class="comment-reply-form">
-                    <textarea id="reply-input-${cm.id}" rows="2" placeholder="답변을 입력하세요..."></textarea>
-                    <button class="comment-reply-submit" onclick="submitReply('${courseId}','${cm.id}')">답변 등록</button>
-                </div>`;
-        }
-
-        item.innerHTML = `
-            <div class="comment-header">
-                <span class="comment-author">${escapeHtml(cm.author)}</span>
-                <span class="comment-date">${dateStr}</span>
-                ${delBtn}
-            </div>
-            <p class="comment-text">${escapeHtml(cm.content)}</p>
-            ${replyHtml}
-        `;
-        listEl.appendChild(item);
-    });
-}
-
-function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
-}
-
-function submitComment() {
-    const input = document.getElementById('comment-input');
-    const content = input.value.trim();
-    if (!content) { alert('댓글 내용을 입력해주세요.'); return; }
-    if (!currentCourseId) return;
-
-    const btn = document.querySelector('#course-comment-section .comment-submit-btn');
-    if (btn) btn.disabled = true;
-
-    db.collection('courseComments')
-        .doc(String(currentCourseId))
-        .collection('comments')
-        .add({
-            author:    currentUser,
-            content:   content,
-            reply:     null,
-            timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-        })
-        .then(() => { input.value = ''; })
-        .catch(e => { console.error('댓글 등록 실패:', e); alert('등록에 실패했습니다.'); })
-        .finally(() => { if (btn) btn.disabled = false; });
-}
-
-function submitReply(courseId, commentId) {
-    const textarea = document.getElementById(`reply-input-${commentId}`);
-    const reply = textarea ? textarea.value.trim() : '';
-    if (!reply) { alert('답변 내용을 입력해주세요.'); return; }
-
-    db.collection('courseComments')
-        .doc(String(courseId))
-        .collection('comments')
-        .doc(commentId)
-        .update({ reply: reply })
-        .catch(e => { console.error('답변 등록 실패:', e); alert('등록에 실패했습니다.'); });
-}
-
-function deleteComment(courseId, commentId) {
-    if (!confirm('이 댓글을 삭제하시겠습니까?')) return;
-    db.collection('courseComments')
-        .doc(String(courseId))
-        .collection('comments')
-        .doc(commentId)
-        .delete()
-        .catch(e => console.error('댓글 삭제 실패:', e));
-}
-
-function deleteReply(courseId, commentId) {
-    if (!confirm('답변을 삭제하시겠습니까?')) return;
-    db.collection('courseComments')
-        .doc(String(courseId))
-        .collection('comments')
-        .doc(commentId)
-        .update({ reply: null })
-        .catch(e => console.error('답변 삭제 실패:', e));
-}
 
 window.onclick = function(event) { if (event.target == document.getElementById('modal')) closeModal(); }
 const _si = document.getElementById('search-input'); if (_si) _si.addEventListener('input', render);
