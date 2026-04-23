@@ -263,10 +263,10 @@ let qaData = [];
 
 // 이름 뒤에 'admin' 접미사 → 관리자
 function isAdminUser() {
-    return isAdminUser() || (currentUser !== null && currentUser.endsWith('admin') && currentUser.length > 5);
+    return currentUser === 'admin' || (currentUser !== null && currentUser.endsWith('admin') && currentUser.length > 5);
 }
 function adminDisplayName() {
-    if (isAdminUser()) return '관리자';
+    if (currentUser === 'admin') return '관리자';
     return currentUser.slice(0, -5) + ' 선생님';
 }
 
