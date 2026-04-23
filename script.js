@@ -261,13 +261,13 @@ let currentGrade = parseInt(localStorage.getItem('currentGrade')) || 2;
 let myEnrolledCourses = [];
 let qaData = [];
 
-// 이름 뒤에 'admin' 접미사 → 관리자
+// 이름 뒤에 '선생님' 접미사 → 관리자 (예: 홍길동선생님)
 function isAdminUser() {
-    return currentUser === 'admin' || (currentUser !== null && currentUser.endsWith('admin') && currentUser.length > 5);
+    return currentUser === 'admin' || (currentUser !== null && currentUser.endsWith('선생님') && currentUser.length > 3);
 }
 function adminDisplayName() {
     if (currentUser === 'admin') return '관리자';
-    return currentUser.slice(0, -5) + ' 선생님';
+    return currentUser; // '홍길동선생님' 그대로 표시
 }
 
 let currentCourseId = null;
@@ -830,14 +830,14 @@ function renderQA() {
                     <div class="qa-title">${qa.title} <span class="private-badge">비공개</span></div>
                     <div class="qa-meta">작성자: ${qa.author === currentUser ? qa.author : '익명'} | 작성일: ${qa.date}</div>
                     <div class="qa-content">${qa.content}</div>
-                    ${qa.answer ? `<div class="qa-answer"><strong style="color: #0056b3;">선생님 답변:</strong><br><div style="margin-top: 8px;">${qa.answer}</div></div>` : `<div style="font-size: 13px; color: #888; margin-top: 15px; font-weight: bold;">답변 대기 중입니다.</div>`}
+                    ${qa.answer ? `<div class="qa-answer"><strong style="color: #0056b3;">${qa.answeredBy || '선생님'} 답변:</strong><br><div style="margin-top: 8px;">${qa.answer}</div></div>` : `<div style="font-size: 13px; color: #888; margin-top: 15px; font-weight: bold;">답변 대기 중입니다.</div>`}
                 </div>
             `;
         } 
         else {
             let answerHtml = '';
             if (qa.answer) {
-                answerHtml = `<div class="qa-answer"><strong style="color: #0056b3;">선생님 답변:</strong><br><div style="margin-top: 8px;">${qa.answer}</div></div>`;
+                answerHtml = `<div class="qa-answer"><strong style="color: #0056b3;">${qa.answeredBy || '선생님'} 답변:</strong><br><div style="margin-top: 8px;">${qa.answer}</div></div>`;
             } else if (isAdmin) {
                 answerHtml = `
                     <div style="margin-top: 15px; background: #f1f3f5; padding: 15px; border-radius: 5px;">
@@ -910,7 +910,10 @@ function submitAnswer(id) {
     const answerInput = document.getElementById(`answer-input-${id}`);
     const answerContent = answerInput.value.trim();
     if (answerContent === '') { alert('답변 내용을 입력해주세요.'); return; }
-    db.collection("qa").doc(id).update({ answer: answerContent }).catch((error) => {
+    db.collection("qa").doc(id).update({
+        answer: answerContent,
+        answeredBy: adminDisplayName(),
+    }).catch((error) => {
         console.error("답변 등록 실패:", error);
     });
 }
@@ -1060,7 +1063,7 @@ function renderComments(comments, courseId) {
                 : '';
             replyHtml = `
                 <div class="comment-reply">
-                    <span class="comment-reply-label">👨‍🏫 선생님 답변</span>
+                    <span class="comment-reply-label">👨‍🏫 ${cm.repliedBy || '선생님'} 답변</span>
                     <p class="comment-reply-text">${escapeHtml(cm.reply)}</p>
                     ${adminDelBtn}
                 </div>`;
@@ -1123,7 +1126,7 @@ function submitReply(courseId, commentId) {
         .doc(String(courseId))
         .collection('comments')
         .doc(commentId)
-        .update({ reply: reply })
+        .update({ reply: reply, repliedBy: adminDisplayName() })
         .catch(e => { console.error('답변 등록 실패:', e); alert('등록에 실패했습니다.'); });
 }
 
