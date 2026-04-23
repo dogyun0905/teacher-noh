@@ -29,7 +29,10 @@
         <div class="header-area">
             <div class="header-main-row">
                 <img src="logo.png" alt="김해고 로고" class="header-logo">
-                <h1 id="main-title">김해고 모의 수강신청</h1>
+                <div style="display:flex; flex-direction:column; gap:2px;">
+                    <h1 id="main-title" style="margin:0;">김해고 모의 수강신청</h1>
+                    <span style="font-size:11px; color:#adb5bd; font-weight:normal; letter-spacing:0.3px;">made by 도균쌤</span>
+                </div>
                 <button class="btn-main-nav" id="nav-qa-btn" onclick="showQAView()">질문 게시판</button>
                 <button class="btn-main-nav" id="nav-history-btn" onclick="showHistoryView()">수강내역 조회</button>
                 <button class="btn-main-nav" id="nav-course-btn" onclick="showCourseView()" style="display: none;">← 수강신청으로</button>
@@ -101,20 +104,6 @@
             </div>
             <div id="pdf-container">
                 <canvas id="pdf-canvas"></canvas>
-            </div>
-
-            <!-- ── 과목별 댓글 섹션 ── -->
-            <div id="course-comment-section">
-                <div class="comment-section-inner">
-                    <h3 class="comment-section-title">💬 과목 댓글</h3>
-                    <div id="comment-form-wrap" class="comment-form-wrap">
-                        <textarea id="comment-input" rows="2" placeholder="이 과목에 대한 질문이나 의견을 남겨보세요."></textarea>
-                        <div style="text-align:right; margin-top:8px;">
-                            <button onclick="submitComment()" class="comment-submit-btn">등록</button>
-                        </div>
-                    </div>
-                    <div id="comment-list"></div>
-                </div>
             </div>
         </div>
     </div>
