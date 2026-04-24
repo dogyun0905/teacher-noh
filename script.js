@@ -15,7 +15,7 @@ const pageMapping = {
     '문학과 영상': 44, '독서 토론과 글쓰기': 46, '주제 탐구 독서': 43, '언어생활 탐구': 48, '화법과 언어': 47, '언어생활과 한자': 201,
     '기하': 59, '경제 수학': 60, '인공지능 수학': 61, '미적분Ⅱ': 58, '수학과제 탐구': 65, '산업수학': 64, '확률과 통계': 57,
     '심화 영어': 77, '미디어 영어': 81, '세계 문화와 영어': 82, '실생활 영어 회화': 80, '영어 발표와 토론': 76, '영미 문학 읽기': 78, '심화 영어 독해와 작문': 79, '영어Ⅱ': 73,
-    '인문학과 윤리': 101, '세계시민과 지리': 89, '경제': 86, '정치': 98, '사회문제 탐구': 104, '세계사': 90, '윤리와 사상': 100, '도시의 미래 탐구': 94, '사회와 문화': 91, '현대사회와 윤리': 92, '한국지리 탐구': 93, '기후변화와 지속가능한 세계': 106, '동아시아 역사 기행': 95, '역사로 탐구하는 현대 세계': 103, '법과 사회': 97, '윤리문제 탐구': 107, '금융과 경제생활': 105, '여행지리': 102,
+    '인문학과 윤리': 101, '세계시민과 지리': 89, '경제': 98, '정치': 96, '사회문제 탐구': 104, '세계사': 90, '윤리와 사상': 100, '도시의 미래 탐구': 94, '사회와 문화': 91, '현대사회와 윤리': 92, '한국지리 탐구': 93, '기후변화와 지속가능한 세계': 106, '동아시아 역사 기행': 95, '역사로 탐구하는 현대 세계': 103, '법과 사회': 97, '윤리문제 탐구': 107, '금융과 경제생활': 105, '여행지리': 102,
     '물리학': 117, '화학': 118, '생명과학': 119, '지구과학': 120, '역학과 에너지': 121, '물질과 에너지': 123, '세포와 물질대사': 125, '지구시스템과학': 127, '기후변화와 환경생태': 130, '전자기와 양자': 122, '화학 반응의 세계': 124, '생물의 유전': 126, '행성우주과학': 128, '융합과학 탐구': 131, '프런티어 사이언스': 124,
     '정보': 159, '데이터 과학': 161, '창의공학설계': 154, '소프트웨어와 생활': 162, '정보과학': 154,
     '한문 고전 읽기': 192, '일본어': 171, '중국어': 170, '일본어 회화': 188, '중국어 회화': 187, '중국 문화': 196, '일본 문화': 197, '심화 중국어': 179, '심화 일본어': 180,
@@ -288,7 +288,7 @@ function login() {
     if (window._qaUnsubscribe) { window._qaUnsubscribe(); window._qaUnsubscribe = null; }
 
     currentUser = username;
-    currentGrade = isAdminUser() ? 2 : parseInt(grade);
+    currentGrade = parseInt(grade);
     localStorage.setItem('currentUser', currentUser);
     localStorage.setItem('currentGrade', currentGrade);
     
@@ -1003,18 +1003,18 @@ try {
         };
     }
 } catch (e) { console.error("PDF 초기화 중 에러 발생:", e); }
-
+ 
 // ═══════════════════════════════════════════════════════════════
 // 과목별 댓글 기능
 // Firestore: courseComments/{courseId}/comments/{commentId}
 // ═══════════════════════════════════════════════════════════════
-
+ 
 function loadComments(courseId) {
     if (commentUnsubscribe) { commentUnsubscribe(); commentUnsubscribe = null; }
     const listEl = document.getElementById('comment-list');
     if (!listEl) return;
     listEl.innerHTML = '<p style="color:#aaa;font-size:13px;text-align:center;padding:16px 0;">불러오는 중...</p>';
-
+ 
     commentUnsubscribe = db.collection('courseComments')
         .doc(String(courseId))
         .collection('comments')
@@ -1028,17 +1028,17 @@ function loadComments(courseId) {
             if (listEl) listEl.innerHTML = '<p style="color:#dc3545;font-size:13px;">댓글을 불러올 수 없습니다.</p>';
         });
 }
-
+ 
 function renderComments(comments, courseId) {
     const listEl = document.getElementById('comment-list');
     if (!listEl) return;
     listEl.innerHTML = '';
-
+ 
     if (comments.length === 0) {
         listEl.innerHTML = '<p style="color:#aaa;font-size:13px;text-align:center;padding:12px 0;">아직 댓글이 없습니다. 첫 댓글을 남겨보세요!</p>';
         return;
     }
-
+ 
     comments.forEach(cm => {
         const admin = isAdminUser();
         const isMine = cm.author === currentUser;
@@ -1048,14 +1048,14 @@ function renderComments(comments, courseId) {
                 dateStr = cm.timestamp.toDate().toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
             }
         } catch(e) {}
-
+ 
         const item = document.createElement('div');
         item.className = 'comment-item';
-
+ 
         const delBtn = (admin || isMine)
             ? `<button class="comment-del-btn" onclick="deleteComment('${courseId}','${cm.id}')">삭제</button>`
             : '';
-
+ 
         let replyHtml = '';
         if (cm.reply) {
             const adminDelBtn = admin
@@ -1074,7 +1074,7 @@ function renderComments(comments, courseId) {
                     <button class="comment-reply-submit" onclick="submitReply('${courseId}','${cm.id}')">답변 등록</button>
                 </div>`;
         }
-
+ 
         item.innerHTML = `
             <div class="comment-header">
                 <span class="comment-author">${escapeHtml(cm.author)}</span>
@@ -1087,22 +1087,22 @@ function renderComments(comments, courseId) {
         listEl.appendChild(item);
     });
 }
-
+ 
 function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
-
+ 
 function submitComment() {
     const input = document.getElementById('comment-input');
     if (!input) return;
     const content = input.value.trim();
     if (!content) { alert('댓글 내용을 입력해주세요.'); return; }
     if (!currentCourseId) { alert('과목 정보를 찾을 수 없습니다.'); return; }
-
+ 
     const btn = document.querySelector('.comment-submit-btn');
     if (btn) btn.disabled = true;
-
+ 
     db.collection('courseComments')
         .doc(String(currentCourseId))
         .collection('comments')
@@ -1116,12 +1116,12 @@ function submitComment() {
         .catch(e => { console.error('댓글 등록 실패:', e); alert('등록에 실패했습니다.'); })
         .finally(() => { if (btn) btn.disabled = false; });
 }
-
+ 
 function submitReply(courseId, commentId) {
     const textarea = document.getElementById('reply-input-' + commentId);
     const reply = textarea ? textarea.value.trim() : '';
     if (!reply) { alert('답변 내용을 입력해주세요.'); return; }
-
+ 
     db.collection('courseComments')
         .doc(String(courseId))
         .collection('comments')
@@ -1129,7 +1129,7 @@ function submitReply(courseId, commentId) {
         .update({ reply: reply, repliedBy: adminDisplayName() })
         .catch(e => { console.error('답변 등록 실패:', e); alert('등록에 실패했습니다.'); });
 }
-
+ 
 function deleteComment(courseId, commentId) {
     if (!confirm('이 댓글을 삭제하시겠습니까?')) return;
     db.collection('courseComments')
@@ -1139,7 +1139,7 @@ function deleteComment(courseId, commentId) {
         .delete()
         .catch(e => console.error('댓글 삭제 실패:', e));
 }
-
+ 
 function deleteReply(courseId, commentId) {
     if (!confirm('답변을 삭제하시겠습니까?')) return;
     db.collection('courseComments')
