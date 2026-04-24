@@ -12,7 +12,7 @@ const db = firebase.firestore();
 
 const pageMapping = {
     '문학': 42, '대수': 55, '영어1': 72, '스포츠 생활 1': 138, '독서와 작문': 41, '미적분 1': 56, '영어 독해와 작문': 74, '스포츠 생활 2': 139, '스포츠 문화': 136, '스포츠 과학': 137,
-    '문학과 영상': 44, '독서 토론과 글쓰기': 46, '주제 탐구 독서': 43, '언어생활 탐구': 48, '화법과 언어': 47, '언어생활과 한자': 201,
+    '문학과 영상': 44, '독서 토론과 글쓰기': 46, '주제 탐구 독서': 43, '언어생활 탐구': 48, '화법과 언어': 40, '언어생활과 한자': 201,
     '기하': 59, '경제 수학': 60, '인공지능 수학': 61, '미적분Ⅱ': 58, '수학과제 탐구': 65, '산업수학': 64, '확률과 통계': 57,
     '심화 영어': 77, '미디어 영어': 81, '세계 문화와 영어': 82, '실생활 영어 회화': 80, '영어 발표와 토론': 76, '영미 문학 읽기': 78, '심화 영어 독해와 작문': 79, '영어Ⅱ': 73,
     '인문학과 윤리': 101, '세계시민과 지리': 89, '경제': 98, '정치': 96, '사회문제 탐구': 104, '세계사': 90, '윤리와 사상': 100, '도시의 미래 탐구': 94, '사회와 문화': 91, '현대사회와 윤리': 92, '한국지리 탐구': 93, '기후변화와 지속가능한 세계': 106, '동아시아 역사 기행': 95, '역사로 탐구하는 현대 세계': 103, '법과 사회': 97, '윤리문제 탐구': 107, '금융과 경제생활': 105, '여행지리': 102,
@@ -20,12 +20,13 @@ const pageMapping = {
     '정보': 159, '데이터 과학': 161, '창의공학설계': 154, '소프트웨어와 생활': 162, '정보과학': 154,
     '한문 고전 읽기': 192, '일본어': 171, '중국어': 170, '일본어 회화': 188, '중국어 회화': 187, '중국 문화': 196, '일본 문화': 197, '심화 중국어': 179, '심화 일본어': 180,
     '음악 감상과 비평': 145, '미술 감상과 비평': 147, '음악 연주와 창작': 144, '미술 창작': 146,
-    '후마니타스': 202, '지속가능한 삶과 공동체 생활탐구': 203, '보건 진로 탐색': 204, '자기 주도적인 삶과 미래 역량 탐구': 205
+    '후마니타스': 202, '후마니타스: 인간의 가치 탐구': 202,
+    '지속가능한 삶과 공동체 생활탐구': 203, '보건 진로 탐색': 204, '자기 주도적인 삶과 미래 역량 탐구': 205
 };
 
 const rules = {
     2: { 1: { 'A': 4, 'C': 1 }, 2: { 'B': 4, 'D': 1 } },
-    3: { 1: { 'E': 8, 'G': 1, 'I': 1 }, 2: { 'F': 8, 'H': 1, 'I': 1 } }
+    3: { 1: { 'E': 5, 'G': 1, 'I': 1 }, 2: { 'F': 8, 'H': 1, 'I': 1 } }
 };
 
 const creditMap = {
@@ -77,6 +78,7 @@ const subjectMap = {
     '역사로 탐구하는 현대 세계': '사회', '법과 사회': '사회',
     '윤리문제 탐구': '사회', '금융과 경제생활': '사회', '여행지리': '사회',
     '후마니타스': '사회',
+    '후마니타스: 인간의 가치 탐구': '사회',
     '물리학': '과학', '화학': '과학', '생명과학': '과학', '지구과학': '과학',
     '역학과 에너지': '과학', '물질과 에너지': '과학', '세포와 물질대사': '과학',
     '지구시스템과학': '과학', '기후변화와 환경생태': '과학', '전자기와 양자': '과학',
@@ -121,8 +123,11 @@ const rawCourses = [
     { id: 1006, grade: 2, semester: 2, group: '지정', name: '미적분 1', desc: '필수 지정 과목입니다.' },
     { id: 1007, grade: 2, semester: 2, group: '지정', name: '영어 독해와 작문', desc: '필수 지정 과목입니다.' },
     { id: 1008, grade: 2, semester: 2, group: '지정', name: '스포츠 생활 2', desc: '필수 지정 과목입니다.' },
-    { id: 1009, grade: 3, semester: 1, group: '지정', name: '스포츠 문화', desc: '필수 지정 과목입니다.' },
-    { id: 1010, grade: 3, semester: 2, group: '지정', name: '스포츠 과학', desc: '필수 지정 과목입니다.' },
+    { id: 1009, grade: 3, semester: 1, group: '지정', name: '화법과 언어', desc: '필수 지정 과목입니다.' },
+    { id: 1010, grade: 3, semester: 1, group: '지정', name: '확률과 통계', desc: '필수 지정 과목입니다.' },
+    { id: 1011, grade: 3, semester: 1, group: '지정', name: '영어Ⅱ', desc: '필수 지정 과목입니다.' },
+    { id: 1012, grade: 3, semester: 1, group: '지정', name: '스포츠 문화', desc: '필수 지정 과목입니다.' },
+    { id: 1013, grade: 3, semester: 2, group: '지정', name: '스포츠 과학', desc: '필수 지정 과목입니다.' },
     { id: 9, grade: 2, semester: 1, group: 'A', name: '문학과 영상', desc: '문학과 영상 과목입니다.' },
     { id: 10, grade: 2, semester: 1, group: 'A', name: '독서 토론과 글쓰기', desc: '독서 토론과 글쓰기 과목입니다.' },
     { id: 11, grade: 2, semester: 1, group: 'A', name: '기하', desc: '기하 과목입니다.' },
@@ -176,65 +181,58 @@ const rawCourses = [
     { id: 59, grade: 2, semester: 2, group: 'D', name: '중국어 회화', desc: '중국어 회화 과목입니다.' },
     { id: 60, grade: 3, semester: 1, group: 'E', name: '주제 탐구 독서', desc: '주제 탐구 독서 과목입니다.' },
     { id: 61, grade: 3, semester: 1, group: 'E', name: '언어생활 탐구', desc: '언어생활 탐구 과목입니다.' },
-    { id: 62, grade: 3, semester: 1, group: 'E', name: '화법과 언어', desc: '화법과 언어 과목입니다.' },
-    { id: 63, grade: 3, semester: 1, group: 'E', name: '미적분Ⅱ', desc: '미적분Ⅱ 과목입니다.' },
-    { id: 64, grade: 3, semester: 1, group: 'E', name: '수학과제 탐구', desc: '수학과제 탐구 과목입니다.' },
-    { id: 65, grade: 3, semester: 1, group: 'E', name: '산업수학', desc: '산업수학 과목입니다.' },
-    { id: 66, grade: 3, semester: 1, group: 'E', name: '확률과 통계', desc: '확률과 통계 과목입니다.' },
-    { id: 67, grade: 3, semester: 1, group: 'E', name: '영어 발표와 토론', desc: '영어 발표와 토론 과목입니다.' },
-    { id: 68, grade: 3, semester: 1, group: 'E', name: '영미 문학 읽기', desc: '영미 문학 읽기 과목입니다.' },
-    { id: 69, grade: 3, semester: 1, group: 'E', name: '심화 영어 독해와 작문', desc: '심화 영어 독해와 작문 과목입니다.' },
-    { id: 70, grade: 3, semester: 1, group: 'E', name: '영어Ⅱ', desc: '영어Ⅱ 과목입니다.' },
-    { id: 71, grade: 3, semester: 1, group: 'E', name: '현대사회와 윤리', desc: '현대사회와 윤리 과목입니다.' },
-    { id: 72, grade: 3, semester: 1, group: 'E', name: '한국지리 탐구', desc: '한국지리 탐구 과목입니다.' },
-    { id: 73, grade: 3, semester: 1, group: 'E', name: '기후변화와 지속가능한 세계', desc: '기후변화와 지속가능한 세계 과목입니다.' },
-    { id: 74, grade: 3, semester: 1, group: 'E', name: '동아시아 역사 기행', desc: '동아시아 역사 기행 과목입니다.' },
-    { id: 75, grade: 3, semester: 1, group: 'E', name: '역사로 탐구하는 현대 세계', desc: '역사로 탐구하는 현대 세계 과목입니다.' },
-    { id: 76, grade: 3, semester: 1, group: 'E', name: '법과 사회', desc: '법과 사회 과목입니다.' },
-    { id: 77, grade: 3, semester: 1, group: 'E', name: '후마니타스', desc: '후마니타스 과목입니다.' },
-    { id: 78, grade: 3, semester: 1, group: 'E', name: '역학과 에너지', desc: '역학과 에너지 과목입니다.' },
-    { id: 79, grade: 3, semester: 1, group: 'E', name: '물질과 에너지', desc: '물질과 에너지 과목입니다.' },
-    { id: 80, grade: 3, semester: 1, group: 'E', name: '세포와 물질대사', desc: '세포와 물질대사 과목입니다.' },
-    { id: 81, grade: 3, semester: 1, group: 'E', name: '지구시스템과학', desc: '지구시스템과학 과목입니다.' },
-    { id: 82, grade: 3, semester: 1, group: 'E', name: '전자기와 양자', desc: '전자기와 양자 과목입니다.' },
-    { id: 83, grade: 3, semester: 1, group: 'E', name: '화학 반응의 세계', desc: '화학 반응의 세계 과목입니다.' },
-    { id: 84, grade: 3, semester: 1, group: 'E', name: '생물의 유전', desc: '생물의 유전 과목입니다.' },
-    { id: 85, grade: 3, semester: 1, group: 'E', name: '행성우주과학', desc: '행성우주과학 과목입니다.' },
-    { id: 86, grade: 3, semester: 1, group: 'E', name: '융합과학 탐구', desc: '융합과학 탐구 과목입니다.' },
-    { id: 87, grade: 3, semester: 1, group: 'E', name: '프런티어 사이언스', desc: '프런티어 사이언스 과목입니다.' },
-    { id: 88, grade: 3, semester: 1, group: 'E', name: '창의공학설계', desc: '창의공학설계 과목입니다.' },
-    { id: 89, grade: 3, semester: 1, group: 'E', name: '소프트웨어와 생활', desc: '소프트웨어와 생활 과목입니다.' },
-    { id: 90, grade: 3, semester: 1, group: 'E', name: '한문 고전 읽기', desc: '한문 고전 읽기 과목입니다.' },
-    { id: 91, grade: 3, semester: 1, group: 'E', name: '중국 문화', desc: '중국 문화 과목입니다.' },
-    { id: 92, grade: 3, semester: 1, group: 'E', name: '일본 문화', desc: '일본 문화 과목입니다.' },
+    { id: 62, grade: 3, semester: 1, group: 'E', name: '미적분Ⅱ', desc: '미적분Ⅱ 과목입니다.' },
+    { id: 63, grade: 3, semester: 1, group: 'E', name: '수학과제 탐구', desc: '수학과제 탐구 과목입니다.' },
+    { id: 64, grade: 3, semester: 1, group: 'E', name: '인공지능 수학', desc: '인공지능 수학 과목입니다.' },
+    { id: 65, grade: 3, semester: 1, group: 'E', name: '영어 발표와 토론', desc: '영어 발표와 토론 과목입니다.' },
+    { id: 66, grade: 3, semester: 1, group: 'E', name: '영미 문학 읽기', desc: '영미 문학 읽기 과목입니다.' },
+    { id: 67, grade: 3, semester: 1, group: 'E', name: '심화 영어 독해와 작문', desc: '심화 영어 독해와 작문 과목입니다.' },
+    { id: 68, grade: 3, semester: 1, group: 'E', name: '현대사회와 윤리', desc: '현대사회와 윤리 과목입니다.' },
+    { id: 69, grade: 3, semester: 1, group: 'E', name: '한국지리 탐구', desc: '한국지리 탐구 과목입니다.' },
+    { id: 70, grade: 3, semester: 1, group: 'E', name: '기후변화와 지속가능한 세계', desc: '기후변화와 지속가능한 세계 과목입니다.' },
+    { id: 71, grade: 3, semester: 1, group: 'E', name: '동아시아 역사 기행', desc: '동아시아 역사 기행 과목입니다.' },
+    { id: 72, grade: 3, semester: 1, group: 'E', name: '역사로 탐구하는 현대 세계', desc: '역사로 탐구하는 현대 세계 과목입니다.' },
+    { id: 73, grade: 3, semester: 1, group: 'E', name: '법과 사회', desc: '법과 사회 과목입니다.' },
+    { id: 74, grade: 3, semester: 1, group: 'E', name: '후마니타스: 인간의 가치 탐구', desc: '후마니타스: 인간의 가치 탐구 과목입니다.' },
+    { id: 75, grade: 3, semester: 1, group: 'E', name: '역학과 에너지', desc: '역학과 에너지 과목입니다.' },
+    { id: 76, grade: 3, semester: 1, group: 'E', name: '물질과 에너지', desc: '물질과 에너지 과목입니다.' },
+    { id: 77, grade: 3, semester: 1, group: 'E', name: '세포와 물질대사', desc: '세포와 물질대사 과목입니다.' },
+    { id: 78, grade: 3, semester: 1, group: 'E', name: '지구시스템과학', desc: '지구시스템과학 과목입니다.' },
+    { id: 79, grade: 3, semester: 1, group: 'E', name: '전자기와 양자', desc: '전자기와 양자 과목입니다.' },
+    { id: 80, grade: 3, semester: 1, group: 'E', name: '화학 반응의 세계', desc: '화학 반응의 세계 과목입니다.' },
+    { id: 81, grade: 3, semester: 1, group: 'E', name: '생물의 유전', desc: '생물의 유전 과목입니다.' },
+    { id: 82, grade: 3, semester: 1, group: 'E', name: '행성우주과학', desc: '행성우주과학 과목입니다.' },
+    { id: 83, grade: 3, semester: 1, group: 'E', name: '융합과학 탐구', desc: '융합과학 탐구 과목입니다.' },
+    { id: 84, grade: 3, semester: 1, group: 'E', name: '프런티어 사이언스', desc: '프런티어 사이언스 과목입니다.' },
+    { id: 85, grade: 3, semester: 1, group: 'E', name: '창의공학설계', desc: '창의공학설계 과목입니다.' },
+    { id: 86, grade: 3, semester: 1, group: 'E', name: '소프트웨어와 생활', desc: '소프트웨어와 생활 과목입니다.' },
+    { id: 87, grade: 3, semester: 1, group: 'E', name: '한문 고전 읽기', desc: '한문 고전 읽기 과목입니다.' },
+    { id: 88, grade: 3, semester: 1, group: 'E', name: '중국 문화', desc: '중국 문화 과목입니다.' },
+    { id: 89, grade: 3, semester: 1, group: 'E', name: '일본 문화', desc: '일본 문화 과목입니다.' },
     { id: 93, grade: 3, semester: 2, group: 'F', name: '주제 탐구 독서', desc: '주제 탐구 독서 과목입니다.' },
     { id: 94, grade: 3, semester: 2, group: 'F', name: '언어생활 탐구', desc: '언어생활 탐구 과목입니다.' },
-    { id: 95, grade: 3, semester: 2, group: 'F', name: '화법과 언어', desc: '화법과 언어 과목입니다.' },
-    { id: 96, grade: 3, semester: 2, group: 'F', name: '미적분Ⅱ', desc: '미적분Ⅱ 과목입니다.' },
-    { id: 97, grade: 3, semester: 2, group: 'F', name: '수학과제 탐구', desc: '수학과제 탐구 과목입니다.' },
-    { id: 98, grade: 3, semester: 2, group: 'F', name: '산업수학', desc: '산업수학 과목입니다.' },
-    { id: 99, grade: 3, semester: 2, group: 'F', name: '확률과 통계', desc: '확률과 통계 과목입니다.' },
-    { id: 100, grade: 3, semester: 2, group: 'F', name: '영어 발표와 토론', desc: '영어 발표와 토론 과목입니다.' },
-    { id: 101, grade: 3, semester: 2, group: 'F', name: '영미 문학 읽기', desc: '영미 문학 읽기 과목입니다.' },
-    { id: 102, grade: 3, semester: 2, group: 'F', name: '심화 영어 독해와 작문', desc: '심화 영어 독해와 작문 과목입니다.' },
-    { id: 103, grade: 3, semester: 2, group: 'F', name: '영어Ⅱ', desc: '영어Ⅱ 과목입니다.' },
-    { id: 104, grade: 3, semester: 2, group: 'F', name: '윤리문제 탐구', desc: '윤리문제 탐구 과목입니다.' },
-    { id: 105, grade: 3, semester: 2, group: 'F', name: '동아시아 역사 기행', desc: '동아시아 역사 기행 과목입니다.' },
-    { id: 106, grade: 3, semester: 2, group: 'F', name: '역사로 탐구하는 현대 세계', desc: '역사로 탐구하는 현대 세계 과목입니다.' },
-    { id: 107, grade: 3, semester: 2, group: 'F', name: '금융과 경제생활', desc: '금융과 경제생활 과목입니다.' },
-    { id: 108, grade: 3, semester: 2, group: 'F', name: '여행지리', desc: '여행지리 과목입니다.' },
-    { id: 109, grade: 3, semester: 2, group: 'F', name: '후마니타스', desc: '후마니타스 과목입니다.' },
-    { id: 110, grade: 3, semester: 2, group: 'F', name: '전자기와 양자', desc: '전자기와 양자 과목입니다.' },
-    { id: 111, grade: 3, semester: 2, group: 'F', name: '화학 반응의 세계', desc: '화학 반응의 세계 과목입니다.' },
-    { id: 112, grade: 3, semester: 2, group: 'F', name: '생물의 유전', desc: '생물의 유전 과목입니다.' },
-    { id: 113, grade: 3, semester: 2, group: 'F', name: '행성우주과학', desc: '행성우주과학 과목입니다.' },
-    { id: 114, grade: 3, semester: 2, group: 'F', name: '융합과학 탐구', desc: '융합과학 탐구 과목입니다.' },
-    { id: 115, grade: 3, semester: 2, group: 'F', name: '프런티어 사이언스', desc: '프런티어 사이언스 과목입니다.' },
-    { id: 116, grade: 3, semester: 2, group: 'F', name: '창의공학설계', desc: '창의공학설계 과목입니다.' },
-    { id: 117, grade: 3, semester: 2, group: 'F', name: '정보과학', desc: '정보과학 과목입니다.' },
-    { id: 118, grade: 3, semester: 2, group: 'F', name: '언어생활과 한자', desc: '언어생활과 한자 과목입니다.' },
-    { id: 119, grade: 3, semester: 2, group: 'F', name: '심화 중국어', desc: '심화 중국어 과목입니다.' },
-    { id: 120, grade: 3, semester: 2, group: 'F', name: '심화 일본어', desc: '심화 일본어 과목입니다.' },
+    { id: 95, grade: 3, semester: 2, group: 'F', name: '미적분Ⅱ', desc: '미적분Ⅱ 과목입니다.' },
+    { id: 96, grade: 3, semester: 2, group: 'F', name: '수학과제 탐구', desc: '수학과제 탐구 과목입니다.' },
+    { id: 97, grade: 3, semester: 2, group: 'F', name: '영어 발표와 토론', desc: '영어 발표와 토론 과목입니다.' },
+    { id: 98, grade: 3, semester: 2, group: 'F', name: '영미 문학 읽기', desc: '영미 문학 읽기 과목입니다.' },
+    { id: 99, grade: 3, semester: 2, group: 'F', name: '심화 영어 독해와 작문', desc: '심화 영어 독해와 작문 과목입니다.' },
+    { id: 100, grade: 3, semester: 2, group: 'F', name: '윤리문제 탐구', desc: '윤리문제 탐구 과목입니다.' },
+    { id: 101, grade: 3, semester: 2, group: 'F', name: '동아시아 역사 기행', desc: '동아시아 역사 기행 과목입니다.' },
+    { id: 102, grade: 3, semester: 2, group: 'F', name: '역사로 탐구하는 현대 세계', desc: '역사로 탐구하는 현대 세계 과목입니다.' },
+    { id: 103, grade: 3, semester: 2, group: 'F', name: '금융과 경제생활', desc: '금융과 경제생활 과목입니다.' },
+    { id: 104, grade: 3, semester: 2, group: 'F', name: '여행지리', desc: '여행지리 과목입니다.' },
+    { id: 105, grade: 3, semester: 2, group: 'F', name: '후마니타스', desc: '후마니타스 과목입니다.' },
+    { id: 106, grade: 3, semester: 2, group: 'F', name: '전자기와 양자', desc: '전자기와 양자 과목입니다.' },
+    { id: 107, grade: 3, semester: 2, group: 'F', name: '화학 반응의 세계', desc: '화학 반응의 세계 과목입니다.' },
+    { id: 108, grade: 3, semester: 2, group: 'F', name: '생물의 유전', desc: '생물의 유전 과목입니다.' },
+    { id: 109, grade: 3, semester: 2, group: 'F', name: '행성우주과학', desc: '행성우주과학 과목입니다.' },
+    { id: 110, grade: 3, semester: 2, group: 'F', name: '융합과학 탐구', desc: '융합과학 탐구 과목입니다.' },
+    { id: 111, grade: 3, semester: 2, group: 'F', name: '프런티어 사이언스', desc: '프런티어 사이언스 과목입니다.' },
+    { id: 112, grade: 3, semester: 2, group: 'F', name: '창의공학설계', desc: '창의공학설계 과목입니다.' },
+    { id: 113, grade: 3, semester: 2, group: 'F', name: '정보과학', desc: '정보과학 과목입니다.' },
+    { id: 114, grade: 3, semester: 2, group: 'F', name: '언어생활과 한자', desc: '언어생활과 한자 과목입니다.' },
+    { id: 115, grade: 3, semester: 2, group: 'F', name: '심화 중국어', desc: '심화 중국어 과목입니다.' },
+    { id: 116, grade: 3, semester: 2, group: 'F', name: '심화 일본어', desc: '심화 일본어 과목입니다.' },
     { id: 121, grade: 3, semester: 1, group: 'G', name: '음악 감상과 비평', desc: '음악 감상과 비평 과목입니다.' },
     { id: 122, grade: 3, semester: 1, group: 'G', name: '미술 감상과 비평', desc: '미술 감상과 비평 과목입니다.' },
     { id: 123, grade: 3, semester: 2, group: 'H', name: '음악 연주와 창작', desc: '음악 연주와 창작 과목입니다.' },
@@ -1003,18 +1001,18 @@ try {
         };
     }
 } catch (e) { console.error("PDF 초기화 중 에러 발생:", e); }
- 
+
 // ═══════════════════════════════════════════════════════════════
 // 과목별 댓글 기능
 // Firestore: courseComments/{courseId}/comments/{commentId}
 // ═══════════════════════════════════════════════════════════════
- 
+
 function loadComments(courseId) {
     if (commentUnsubscribe) { commentUnsubscribe(); commentUnsubscribe = null; }
     const listEl = document.getElementById('comment-list');
     if (!listEl) return;
     listEl.innerHTML = '<p style="color:#aaa;font-size:13px;text-align:center;padding:16px 0;">불러오는 중...</p>';
- 
+
     commentUnsubscribe = db.collection('courseComments')
         .doc(String(courseId))
         .collection('comments')
@@ -1028,17 +1026,17 @@ function loadComments(courseId) {
             if (listEl) listEl.innerHTML = '<p style="color:#dc3545;font-size:13px;">댓글을 불러올 수 없습니다.</p>';
         });
 }
- 
+
 function renderComments(comments, courseId) {
     const listEl = document.getElementById('comment-list');
     if (!listEl) return;
     listEl.innerHTML = '';
- 
+
     if (comments.length === 0) {
         listEl.innerHTML = '<p style="color:#aaa;font-size:13px;text-align:center;padding:12px 0;">아직 댓글이 없습니다. 첫 댓글을 남겨보세요!</p>';
         return;
     }
- 
+
     comments.forEach(cm => {
         const admin = isAdminUser();
         const isMine = cm.author === currentUser;
@@ -1048,14 +1046,14 @@ function renderComments(comments, courseId) {
                 dateStr = cm.timestamp.toDate().toLocaleString('ko-KR', { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
             }
         } catch(e) {}
- 
+
         const item = document.createElement('div');
         item.className = 'comment-item';
- 
+
         const delBtn = (admin || isMine)
             ? `<button class="comment-del-btn" onclick="deleteComment('${courseId}','${cm.id}')">삭제</button>`
             : '';
- 
+
         let replyHtml = '';
         if (cm.reply) {
             const adminDelBtn = admin
@@ -1074,7 +1072,7 @@ function renderComments(comments, courseId) {
                     <button class="comment-reply-submit" onclick="submitReply('${courseId}','${cm.id}')">답변 등록</button>
                 </div>`;
         }
- 
+
         item.innerHTML = `
             <div class="comment-header">
                 <span class="comment-author">${escapeHtml(cm.author)}</span>
@@ -1087,22 +1085,22 @@ function renderComments(comments, courseId) {
         listEl.appendChild(item);
     });
 }
- 
+
 function escapeHtml(str) {
     if (!str) return '';
     return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');
 }
- 
+
 function submitComment() {
     const input = document.getElementById('comment-input');
     if (!input) return;
     const content = input.value.trim();
     if (!content) { alert('댓글 내용을 입력해주세요.'); return; }
     if (!currentCourseId) { alert('과목 정보를 찾을 수 없습니다.'); return; }
- 
+
     const btn = document.querySelector('.comment-submit-btn');
     if (btn) btn.disabled = true;
- 
+
     db.collection('courseComments')
         .doc(String(currentCourseId))
         .collection('comments')
@@ -1116,12 +1114,12 @@ function submitComment() {
         .catch(e => { console.error('댓글 등록 실패:', e); alert('등록에 실패했습니다.'); })
         .finally(() => { if (btn) btn.disabled = false; });
 }
- 
+
 function submitReply(courseId, commentId) {
     const textarea = document.getElementById('reply-input-' + commentId);
     const reply = textarea ? textarea.value.trim() : '';
     if (!reply) { alert('답변 내용을 입력해주세요.'); return; }
- 
+
     db.collection('courseComments')
         .doc(String(courseId))
         .collection('comments')
@@ -1129,7 +1127,7 @@ function submitReply(courseId, commentId) {
         .update({ reply: reply, repliedBy: adminDisplayName() })
         .catch(e => { console.error('답변 등록 실패:', e); alert('등록에 실패했습니다.'); });
 }
- 
+
 function deleteComment(courseId, commentId) {
     if (!confirm('이 댓글을 삭제하시겠습니까?')) return;
     db.collection('courseComments')
@@ -1139,7 +1137,7 @@ function deleteComment(courseId, commentId) {
         .delete()
         .catch(e => console.error('댓글 삭제 실패:', e));
 }
- 
+
 function deleteReply(courseId, commentId) {
     if (!confirm('답변을 삭제하시겠습니까?')) return;
     db.collection('courseComments')
