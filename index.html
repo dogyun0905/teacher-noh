@@ -35,6 +35,7 @@
                 </div>
                 <button class="btn-main-nav" id="nav-qa-btn" onclick="showQAView()">질문 게시판</button>
                 <button class="btn-main-nav" id="nav-history-btn" onclick="showHistoryView()">수강내역 조회</button>
+                <button class="btn-main-nav" id="nav-credit-btn" onclick="showCreditView()">학점 계산기</button>
                 <button class="btn-main-nav" id="nav-course-btn" onclick="showCourseView()" style="display: none;">← 수강신청으로</button>
             </div>
             <div class="user-info">
@@ -48,7 +49,7 @@
                 <div class="section">
                     <h2>개설 과목 목록</h2>
                     <div class="filter-container">
-                        <input type="text" id="search-input" placeholder="과목명을 검색하세요...">
+                        <input type="text" id="search-input" placeholder="과목명이나 설명을 검색하세요...">
                     </div>
                     <div id="course-list"></div>
                 </div>
@@ -60,6 +61,74 @@
                 <div id="credit-summary-cart"></div>
                 <div id="my-courses"></div>
                 <button class="btn-submit" onclick="submitCourses()">모의 수강신청 제출</button>
+            </div>
+        </div>
+
+        <!-- ── 학점 계산기 뷰 ── -->
+        <div id="credit-view" class="container" style="display: none; flex-direction: column;">
+            <div class="section" style="width: 100%; box-sizing: border-box;">
+                <div class="qa-header">
+                    <h2 style="margin:0; color:#0056b3;">📊 학점 계산기</h2>
+                    <p>1학년 때 들은 과목을 선택하고, 현재 수강 내역과 합산하여 영역별 학점을 확인하세요.</p>
+                </div>
+
+                <!-- 1학년 과목 선택 -->
+                <div class="credit-calc-section">
+                    <h3 class="credit-calc-subtitle">1️⃣ 1학년 수강 과목 선택</h3>
+
+                    <!-- 공통 지정 (체크 불가) -->
+                    <div class="credit-calc-group">
+                        <div class="credit-calc-group-title">공통 지정과목 (자동 포함)</div>
+                        <div class="credit-fixed-list">
+                            <span class="credit-fixed-chip">공통국어1 <em>4학점</em></span>
+                            <span class="credit-fixed-chip">공통국어2 <em>4학점</em></span>
+                            <span class="credit-fixed-chip">공통수학1 <em>4학점</em></span>
+                            <span class="credit-fixed-chip">공통수학2 <em>4학점</em></span>
+                            <span class="credit-fixed-chip">공통영어1 <em>4학점</em></span>
+                            <span class="credit-fixed-chip">공통영어2 <em>4학점</em></span>
+                            <span class="credit-fixed-chip">한국사1 <em>3학점</em></span>
+                            <span class="credit-fixed-chip">한국사2 <em>3학점</em></span>
+                            <span class="credit-fixed-chip">통합사회1 <em>3학점</em></span>
+                            <span class="credit-fixed-chip">통합사회2 <em>3학점</em></span>
+                            <span class="credit-fixed-chip">통합과학1 <em>3학점</em></span>
+                            <span class="credit-fixed-chip">통합과학2 <em>3학점</em></span>
+                            <span class="credit-fixed-chip">과학탐구실험1 <em>1학점</em></span>
+                            <span class="credit-fixed-chip">과학탐구실험2 <em>1학점</em></span>
+                            <span class="credit-fixed-chip">체육1 <em>2학점</em></span>
+                            <span class="credit-fixed-chip">체육2 <em>2학점</em></span>
+                        </div>
+                    </div>
+
+                    <!-- 선택 과목 (음악/미술, 기술가정/한문) -->
+                    <div class="credit-calc-group">
+                        <div class="credit-calc-group-title">선택과목 <span style="font-weight:normal; font-size:12px; color:#888;">(해당하는 것을 선택하세요)</span></div>
+                        <div class="credit-choice-grid">
+                            <label class="credit-choice-label">
+                                <input type="radio" name="arts1" value="music" onchange="calcCredits()">
+                                음악 <em>4학점</em>
+                            </label>
+                            <label class="credit-choice-label">
+                                <input type="radio" name="arts1" value="art" onchange="calcCredits()">
+                                미술 <em>4학점</em>
+                            </label>
+                            <label class="credit-choice-label" style="margin-left:20px;">
+                                <input type="radio" name="tech1" value="tech" onchange="calcCredits()">
+                                기술·가정 <em>6학점</em>
+                            </label>
+                            <label class="credit-choice-label">
+                                <input type="radio" name="tech1" value="hanja" onchange="calcCredits()">
+                                한문 <em>6학점</em>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 결과 -->
+                <div class="credit-calc-section" style="margin-top:20px;">
+                    <h3 class="credit-calc-subtitle">📋 영역별 학점 합계</h3>
+                    <p style="font-size:13px; color:#888; margin:0 0 14px 0;">1학년 과목 + 현재 수강신청 과목을 합산한 결과입니다.</p>
+                    <div id="credit-calc-result"></div>
+                </div>
             </div>
         </div>
 
@@ -109,9 +178,9 @@
             <!-- ── 과목별 댓글 섹션 ── -->
             <div id="course-comment-section">
                 <div class="comment-section-inner">
-                    <h3 class="comment-section-title">과목 Q&A</h3>
+                    <h3 class="comment-section-title">💬 과목 댓글</h3>
                     <div id="comment-form-wrap" class="comment-form-wrap">
-                        <textarea id="comment-input" rows="2" placeholder="이 과목에 대한 질문을 남겨보세요."></textarea>
+                        <textarea id="comment-input" rows="2" placeholder="이 과목에 대한 질문이나 의견을 남겨보세요."></textarea>
                         <div style="text-align:right; margin-top:8px;">
                             <button onclick="submitComment()" class="comment-submit-btn">등록</button>
                         </div>

@@ -481,3 +481,136 @@ body { font-family: sans-serif; background-color: #f8f9fa; margin: 20px; color: 
     .comment-text { font-size: 13px; }
     .comment-reply-text { font-size: 12px; }
 }
+
+/* ════════════════════════════════
+   학점 계산기
+   ════════════════════════════════ */
+.credit-calc-section {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+}
+.credit-calc-subtitle {
+    font-size: 15px;
+    font-weight: bold;
+    color: #333;
+    margin: 0 0 14px 0;
+}
+.credit-calc-group { margin-bottom: 16px; }
+.credit-calc-group:last-child { margin-bottom: 0; }
+.credit-calc-group-title {
+    font-size: 13px;
+    font-weight: bold;
+    color: #495057;
+    margin-bottom: 10px;
+    padding-bottom: 6px;
+    border-bottom: 1.5px solid #dee2e6;
+}
+
+/* 고정 과목 칩 */
+.credit-fixed-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.credit-fixed-chip {
+    background: #e9ecef;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 13px;
+    color: #495057;
+}
+.credit-fixed-chip em { font-style: normal; color: #0056b3; font-weight: bold; margin-left: 4px; }
+
+/* 선택 과목 라디오 */
+.credit-choice-grid { display: flex; flex-wrap: wrap; gap: 10px 24px; }
+.credit-choice-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    padding: 6px 12px;
+    border: 1.5px solid #dee2e6;
+    border-radius: 8px;
+    transition: 0.15s;
+}
+.credit-choice-label:has(input:checked) {
+    border-color: #0056b3;
+    background: #e7f3ff;
+    color: #0056b3;
+    font-weight: bold;
+}
+.credit-choice-label em { font-style: normal; color: #0056b3; font-size: 12px; margin-left: 2px; }
+.credit-choice-label input { accent-color: #0056b3; }
+
+/* 결과 영역별 카드 그리드 */
+.credit-calc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 10px;
+    margin-bottom: 16px;
+}
+.credit-calc-card {
+    border-radius: 8px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.credit-calc-card-sub { font-size: 12px; font-weight: bold; }
+.credit-calc-card-val { font-size: 22px; font-weight: bold; line-height: 1.2; }
+.credit-calc-card-unit { font-size: 13px; font-weight: normal; margin-left: 2px; }
+
+/* 총합 */
+.credit-calc-total {
+    text-align: center;
+    background: #0056b3;
+    color: white;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+.credit-calc-total strong { font-size: 22px; margin-left: 8px; }
+
+/* 상세 목록 */
+.credit-calc-detail {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 10px;
+    padding: 16px;
+}
+.credit-calc-detail-title {
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    margin-bottom: 12px;
+}
+.credit-calc-detail-grade {
+    font-size: 12px;
+    font-weight: bold;
+    color: #868e96;
+    background: #f1f3f5;
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin: 10px 0 8px 0;
+    display: inline-block;
+}
+.credit-calc-detail-list { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 4px; }
+.credit-detail-chip {
+    font-size: 12px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid;
+    background: white;
+}
+.credit-detail-chip em { font-style: normal; font-weight: bold; margin-left: 3px; }
+
+/* 모바일 */
+@media (max-width: 768px) {
+    .credit-calc-section { padding: 14px; }
+    .credit-calc-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+    .credit-calc-card-val { font-size: 18px; }
+    .credit-choice-grid { gap: 8px; }
+    .credit-choice-label { font-size: 13px; padding: 5px 10px; }
+}

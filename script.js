@@ -323,9 +323,11 @@ function showApp() {
 function showQAView() {
     document.getElementById('course-view').style.display = 'none';
     document.getElementById('history-view').style.display = 'none';
+    document.getElementById('credit-view').style.display = 'none';
     document.getElementById('qa-view').style.display = 'flex';
     document.getElementById('nav-qa-btn').style.display = 'none';
     document.getElementById('nav-history-btn').style.display = 'none';
+    document.getElementById('nav-credit-btn').style.display = 'none';
     document.getElementById('nav-course-btn').style.display = 'block';
     document.getElementById('mobile-cart-btn').style.display = 'none';
 }
@@ -334,8 +336,10 @@ function showCourseView() {
     document.getElementById('course-view').style.display = 'flex';
     document.getElementById('qa-view').style.display = 'none';
     document.getElementById('history-view').style.display = 'none';
+    document.getElementById('credit-view').style.display = 'none';
     document.getElementById('nav-qa-btn').style.display = 'block';
     document.getElementById('nav-history-btn').style.display = 'block';
+    document.getElementById('nav-credit-btn').style.display = 'block';
     document.getElementById('nav-course-btn').style.display = 'none';
     
     if(window.innerWidth <= 768) {
@@ -345,9 +349,11 @@ function showCourseView() {
 function showHistoryView() {
     document.getElementById('course-view').style.display = 'none';
     document.getElementById('qa-view').style.display = 'none';
+    document.getElementById('credit-view').style.display = 'none';
     document.getElementById('history-view').style.display = 'flex';
     document.getElementById('nav-qa-btn').style.display = 'none';
     document.getElementById('nav-history-btn').style.display = 'none';
+    document.getElementById('nav-credit-btn').style.display = 'none';
     document.getElementById('nav-course-btn').style.display = 'block';
     document.getElementById('mobile-cart-btn').style.display = 'none';
     loadHistoryView();
@@ -1146,6 +1152,131 @@ function deleteReply(courseId, commentId) {
         .doc(commentId)
         .update({ reply: null })
         .catch(e => console.error('답변 삭제 실패:', e));
+}
+
+function showCreditView() {
+    document.getElementById('course-view').style.display = 'none';
+    document.getElementById('qa-view').style.display = 'none';
+    document.getElementById('history-view').style.display = 'none';
+    document.getElementById('credit-view').style.display = 'flex';
+    document.getElementById('nav-qa-btn').style.display = 'none';
+    document.getElementById('nav-history-btn').style.display = 'none';
+    document.getElementById('nav-credit-btn').style.display = 'none';
+    document.getElementById('nav-course-btn').style.display = 'block';
+    document.getElementById('mobile-cart-btn').style.display = 'none';
+    calcCredits();
+}
+
+// ── 1학년 고정 과목 ──────────────────────────────────────────────────────────
+const grade1Fixed = [
+    { name: '공통국어1',   subject: '국어',   credit: 4 },
+    { name: '공통국어2',   subject: '국어',   credit: 4 },
+    { name: '공통수학1',   subject: '수학',   credit: 4 },
+    { name: '공통수학2',   subject: '수학',   credit: 4 },
+    { name: '공통영어1',   subject: '영어',   credit: 4 },
+    { name: '공통영어2',   subject: '영어',   credit: 4 },
+    { name: '한국사1',     subject: '사회',   credit: 3 },
+    { name: '한국사2',     subject: '사회',   credit: 3 },
+    { name: '통합사회1',   subject: '사회',   credit: 3 },
+    { name: '통합사회2',   subject: '사회',   credit: 3 },
+    { name: '통합과학1',   subject: '과학',   credit: 3 },
+    { name: '통합과학2',   subject: '과학',   credit: 3 },
+    { name: '과학탐구실험1', subject: '과학', credit: 1 },
+    { name: '과학탐구실험2', subject: '과학', credit: 1 },
+    { name: '체육1',       subject: '체육',   credit: 2 },
+    { name: '체육2',       subject: '체육',   credit: 2 },
+];
+
+function calcCredits() {
+    // 1학년 과목 집계
+    const allCourses = [...grade1Fixed];
+
+    // 음악/미술 선택
+    const arts = document.querySelector('input[name="arts1"]:checked');
+    if (arts) {
+        allCourses.push(arts.value === 'music'
+            ? { name: '음악', subject: '예술', credit: 4 }
+            : { name: '미술', subject: '예술', credit: 4 });
+    }
+    // 기술가정/한문 선택
+    const tech = document.querySelector('input[name="tech1"]:checked');
+    if (tech) {
+        allCourses.push(tech.value === 'tech'
+            ? { name: '기술·가정', subject: '기술·가정', credit: 6 }
+            : { name: '한문',     subject: '한문',     credit: 6 });
+    }
+
+    // 현재 수강신청 과목 (myEnrolledCourses) 합산
+    myEnrolledCourses.forEach(c => {
+        allCourses.push({
+            name:    c.name,
+            subject: c.subject || subjectMap[c.name] || '기타',
+            credit:  c.credit  || creditMap[c.name]  || 2,
+            grade:   c.grade,
+        });
+    });
+
+    // 교과별 집계
+    const totals = {};
+    allCourses.forEach(c => {
+        totals[c.subject] = (totals[c.subject] || 0) + c.credit;
+    });
+    const totalAll = Object.values(totals).reduce((a, b) => a + b, 0);
+
+    // 렌더
+    const resultEl = document.getElementById('credit-calc-result');
+    if (!resultEl) return;
+
+    let html = '';
+
+    // 영역별 카드
+    html += '<div class="credit-calc-grid">';
+    const order = [...subjectOrder, '기타'];
+    order.forEach(sub => {
+        if (!totals[sub]) return;
+        const col = subjectColors[sub] || { bg:'#f5f5f5', border:'#aaa', text:'#555' };
+        html += `
+            <div class="credit-calc-card" style="border-left:4px solid ${col.border}; background:${col.bg};">
+                <div class="credit-calc-card-sub" style="color:${col.text};">${sub}</div>
+                <div class="credit-calc-card-val" style="color:${col.text};">${totals[sub]}<span class="credit-calc-card-unit">학점</span></div>
+            </div>`;
+    });
+    html += '</div>';
+
+    // 총합 배지
+    html += `<div class="credit-calc-total">총 이수 학점 <strong>${totalAll}학점</strong></div>`;
+
+    // 1학년 / 2학년 구분 상세
+    html += '<div class="credit-calc-detail">';
+    html += '<div class="credit-calc-detail-title">📌 과목 상세 목록</div>';
+
+    // 1학년
+    html += '<div class="credit-calc-detail-grade">1학년</div>';
+    html += '<div class="credit-calc-detail-list">';
+    allCourses.filter(c => !c.grade).forEach(c => {
+        const col = subjectColors[c.subject] || { border:'#aaa', text:'#555' };
+        html += `<span class="credit-detail-chip" style="border-color:${col.border}; color:${col.text};">${c.name} <em>${c.credit}학점</em></span>`;
+    });
+    html += '</div>';
+
+    // 2학년 또는 3학년
+    const gradeList = [...new Set(myEnrolledCourses.map(c => c.grade))].sort();
+    gradeList.forEach(g => {
+        const gCourses = myEnrolledCourses.filter(c => c.grade === g);
+        if (!gCourses.length) return;
+        html += `<div class="credit-calc-detail-grade">${g}학년 (수강신청)</div>`;
+        html += '<div class="credit-calc-detail-list">';
+        gCourses.forEach(c => {
+            const sub = c.subject || subjectMap[c.name] || '기타';
+            const cr  = c.credit  || creditMap[c.name]  || 2;
+            const col = subjectColors[sub] || { border:'#aaa', text:'#555' };
+            html += `<span class="credit-detail-chip" style="border-color:${col.border}; color:${col.text};">${c.name} <em>${cr}학점</em></span>`;
+        });
+        html += '</div>';
+    });
+
+    html += '</div>';
+    resultEl.innerHTML = html;
 }
 
 window.onclick = function(event) { if (event.target == document.getElementById('modal')) closeModal(); }
