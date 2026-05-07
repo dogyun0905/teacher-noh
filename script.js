@@ -1279,6 +1279,15 @@ function calcCredits() {
     // 총합 배지
     html += `<div class="credit-calc-total">총 이수 학점 <strong>${totalAll}학점</strong></div>`;
 
+    // 국어·영어·수학 합산 배지
+    const kem = (totals['국어'] || 0) + (totals['영어'] || 0) + (totals['수학'] || 0);
+    html += `<div class="credit-kem-row">`;
+    html += `<div class="credit-kem-chip" style="background:${subjectColors['국어'].bg}; border-color:${subjectColors['국어'].border}; color:${subjectColors['국어'].text};">국어 <strong>${totals['국어'] || 0}학점</strong></div>`;
+    html += `<div class="credit-kem-chip" style="background:${subjectColors['수학'].bg}; border-color:${subjectColors['수학'].border}; color:${subjectColors['수학'].text};">수학 <strong>${totals['수학'] || 0}학점</strong></div>`;
+    html += `<div class="credit-kem-chip" style="background:${subjectColors['영어'].bg}; border-color:${subjectColors['영어'].border}; color:${subjectColors['영어'].text};">영어 <strong>${totals['영어'] || 0}학점</strong></div>`;
+    html += `<div class="credit-kem-total">국·수·영 합계 <strong>${kem}학점</strong></div>`;
+    html += `</div>`;
+
     // 1학년 / 2학년 구분 상세
     html += '<div class="credit-calc-detail">';
     html += '<div class="credit-calc-detail-title">📌 과목 상세 목록</div>';

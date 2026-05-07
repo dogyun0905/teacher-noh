@@ -664,3 +664,39 @@ body { font-family: sans-serif; background-color: #f8f9fa; margin: 20px; color: 
 @media (max-width: 768px) {
     .grade2-check-label { font-size: 12px; padding: 4px 8px; }
 }
+
+/* ── 국·수·영 합계 ── */
+.credit-kem-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+}
+.credit-kem-chip {
+    flex: 1;
+    min-width: 80px;
+    text-align: center;
+    border: 1.5px solid;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+}
+.credit-kem-chip strong { display: block; font-size: 18px; margin-top: 2px; }
+.credit-kem-total {
+    flex: 1.5;
+    min-width: 120px;
+    text-align: center;
+    background: #343a40;
+    color: white;
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-size: 13px;
+}
+.credit-kem-total strong { display: block; font-size: 18px; margin-top: 2px; }
+
+@media (max-width: 768px) {
+    .credit-kem-chip { font-size: 12px; padding: 6px 8px; }
+    .credit-kem-chip strong { font-size: 16px; }
+    .credit-kem-total strong { font-size: 16px; }
+}
