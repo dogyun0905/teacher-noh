@@ -99,6 +99,71 @@
                         </div>
                     </div>
 
+
+                    <!-- 3학년 전용: 2학년 선택과목 -->
+                    <div class="credit-calc-group" id="grade2-select-section" style="display:none;">
+                        <div class="credit-calc-group-title">2학년 때 들은 선택과목 <span style="font-weight:normal;font-size:12px;color:#888;">(해당하는 것을 모두 체크하세요)</span></div>
+                        <div class="grade2-group-label">선택군 A (1학기)</div>
+                        <div class="grade2-check-grid">
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="문학과 영상" onchange="calcCredits()"> 문학과 영상</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="독서 토론과 글쓰기" onchange="calcCredits()"> 독서 토론과 글쓰기</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="기하" onchange="calcCredits()"> 기하</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="경제 수학" onchange="calcCredits()"> 경제 수학</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="심화 영어" onchange="calcCredits()"> 심화 영어</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="미디어 영어" onchange="calcCredits()"> 미디어 영어</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="세계 문화와 영어" onchange="calcCredits()"> 세계 문화와 영어</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="실생활 영어 회화" onchange="calcCredits()"> 실생활 영어 회화</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="인문학과 윤리" onchange="calcCredits()"> 인문학과 윤리</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="세계시민과 지리" onchange="calcCredits()"> 세계시민과 지리</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="경제" onchange="calcCredits()"> 경제</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="정치" onchange="calcCredits()"> 정치</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="사회문제 탐구" onchange="calcCredits()"> 사회문제 탐구</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="세계사" onchange="calcCredits()"> 세계사</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="물리학" onchange="calcCredits()"> 물리학</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="화학" onchange="calcCredits()"> 화학</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="생명과학" onchange="calcCredits()"> 생명과학</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="지구과학" onchange="calcCredits()"> 지구과학</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="기후변화와 환경생태" onchange="calcCredits()"> 기후변화와 환경생태</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="정보" onchange="calcCredits()"> 정보</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="언어생활과 한자" onchange="calcCredits()"> 언어생활과 한자</label>
+                        </div>
+                        <div class="grade2-group-label" style="margin-top:12px;">선택군 B (2학기)</div>
+                        <div class="grade2-check-grid">
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="문학과 영상" onchange="calcCredits()"> 문학과 영상</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="독서 토론과 글쓰기" onchange="calcCredits()"> 독서 토론과 글쓰기</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="기하" onchange="calcCredits()"> 기하</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="경제 수학" onchange="calcCredits()"> 경제 수학</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="인공지능 수학" onchange="calcCredits()"> 인공지능 수학</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="심화 영어" onchange="calcCredits()"> 심화 영어</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="미디어 영어" onchange="calcCredits()"> 미디어 영어</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="세계 문화와 영어" onchange="calcCredits()"> 세계 문화와 영어</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="실생활 영어 회화" onchange="calcCredits()"> 실생활 영어 회화</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="윤리와 사상" onchange="calcCredits()"> 윤리와 사상</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="도시의 미래 탐구" onchange="calcCredits()"> 도시의 미래 탐구</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="경제" onchange="calcCredits()"> 경제</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="사회와 문화" onchange="calcCredits()"> 사회와 문화</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="사회문제 탐구" onchange="calcCredits()"> 사회문제 탐구</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="세계사" onchange="calcCredits()"> 세계사</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="물리학" onchange="calcCredits()"> 물리학</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="화학" onchange="calcCredits()"> 화학</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="생명과학" onchange="calcCredits()"> 생명과학</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="지구과학" onchange="calcCredits()"> 지구과학</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="역학과 에너지" onchange="calcCredits()"> 역학과 에너지</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="물질과 에너지" onchange="calcCredits()"> 물질과 에너지</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="세포와 물질대사" onchange="calcCredits()"> 세포와 물질대사</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="지구시스템과학" onchange="calcCredits()"> 지구시스템과학</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="기후변화와 환경생태" onchange="calcCredits()"> 기후변화와 환경생태</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="데이터 과학" onchange="calcCredits()"> 데이터 과학</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="한문 고전 읽기" onchange="calcCredits()"> 한문 고전 읽기</label>
+                        </div>
+                        <div class="grade2-group-label" style="margin-top:12px;">선택군 C/D (제2외국어)</div>
+                        <div class="grade2-check-grid">
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="일본어" onchange="calcCredits()"> 일본어</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="중국어" onchange="calcCredits()"> 중국어</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="일본어 회화" onchange="calcCredits()"> 일본어 회화</label>
+                            <label class="grade2-check-label"><input type="checkbox" class="grade2-course-check" data-name="중국어 회화" onchange="calcCredits()"> 중국어 회화</label>
+                        </div>
+                    </div>
                     <!-- 선택 과목 (음악/미술, 기술가정/한문) -->
                     <div class="credit-calc-group">
                         <div class="credit-calc-group-title">선택과목 <span style="font-weight:normal; font-size:12px; color:#888;">(해당하는 것을 선택하세요)</span></div>

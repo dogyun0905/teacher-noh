@@ -419,7 +419,10 @@ function renderHistoryAdmin(students) {
         wrapper.innerHTML = `
             <div class="history-student-header" onclick="this.parentElement.classList.toggle('open')">
                 <div class="history-student-name">${grade}학년 ${student.name} ${statusBadge}</div>
-                <div class="history-student-meta">${totalCount}과목 ▾</div>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <div class="history-student-meta">${totalCount}과목 ▾</div>
+                    <button class="admin-del-btn" onclick="event.stopPropagation(); deleteStudentHistory('${student.name}')">삭제</button>
+                </div>
             </div>
             <div class="history-student-body"></div>
         `;
@@ -1154,6 +1157,20 @@ function deleteReply(courseId, commentId) {
         .catch(e => console.error('답변 삭제 실패:', e));
 }
 
+function deleteStudentHistory(studentName) {
+    if (!confirm(`'${studentName}' 학생의 수강신청 내역을 삭제하시겠습니까?\n이 작업은 되돌릴 수 없습니다.`)) return;
+    db.collection('users').doc(studentName).delete()
+        .then(() => {
+            alert(`'${studentName}' 학생의 수강 내역이 삭제되었습니다.`);
+            loadHistoryView();
+        })
+        .catch(e => {
+            console.error('삭제 실패:', e);
+            alert('삭제에 실패했습니다: ' + e.message);
+        });
+}
+
+
 function showCreditView() {
     document.getElementById('course-view').style.display = 'none';
     document.getElementById('qa-view').style.display = 'none';
@@ -1164,6 +1181,9 @@ function showCreditView() {
     document.getElementById('nav-credit-btn').style.display = 'none';
     document.getElementById('nav-course-btn').style.display = 'block';
     document.getElementById('mobile-cart-btn').style.display = 'none';
+    // 3학년만 2학년 선택과목 섹션 표시
+    const g2sec = document.getElementById('grade2-select-section');
+    if (g2sec) g2sec.style.display = currentGrade === 3 ? 'block' : 'none';
     calcCredits();
 }
 
@@ -1204,6 +1224,19 @@ function calcCredits() {
         allCourses.push(tech.value === 'tech'
             ? { name: '기술·가정', subject: '기술·가정', credit: 6 }
             : { name: '한문',     subject: '한문',     credit: 6 });
+    }
+
+    // 3학년: 2학년 선택과목 추가
+    if (currentGrade === 3) {
+        document.querySelectorAll('.grade2-course-check:checked').forEach(cb => {
+            const name = cb.dataset.name;
+            allCourses.push({
+                name,
+                subject: subjectMap[name] || '기타',
+                credit:  creditMap[name]  || 3,
+                grade:   2,
+            });
+        });
     }
 
     // 현재 수강신청 과목 (myEnrolledCourses) 합산
