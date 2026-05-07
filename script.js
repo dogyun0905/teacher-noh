@@ -270,6 +270,7 @@ function adminDisplayName() {
 
 let currentCourseId = null;
 let commentUnsubscribe = null;
+let commentCounts = {};  // { courseId: { total, unanswered } }
 
 function init() { 
     if (currentUser) { showApp(); } else { showLogin(); } 
@@ -318,6 +319,7 @@ function showApp() {
     showCourseView();
     loadMyCoursesFromDB();
     listenToQABoard();
+    listenCommentCounts();
 }
 
 function showQAView() {
@@ -650,11 +652,16 @@ function render() {
 
                             const card = document.createElement('div');
                             card.className = 'card';
+                            const cc = commentCounts[course.id];
+                            const commentBadge = cc && cc.unanswered > 0
+                                ? `<span class="comment-count-badge">💬 ${cc.unanswered}</span>`
+                                : '';
                             card.innerHTML = `
                                 <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:4px;">
                                     <h4 style="color:#0056b3; margin:0;">${course.name}</h4>
                                     <span class="course-credit-badge">${course.credit}학점</span>
                                 </div>
+                                ${commentBadge}
                                 <div class="button-group">
                                     <button class="btn-detail" onclick="showDetail(${course.id})">상세</button>
                                     ${btnHtml}
@@ -1015,6 +1022,46 @@ try {
 // 과목별 댓글 기능
 // Firestore: courseComments/{courseId}/comments/{commentId}
 // ═══════════════════════════════════════════════════════════════
+
+// ── 과목별 댓글 수 실시간 감지 ────────────────────────────────────────────
+function listenCommentCounts() {
+    // 전체 courseComments 컬렉션 순회 — 각 과목 서브컬렉션 감지
+    // courses 목록 기준으로 각 id의 comments 수 구독
+    courses.forEach(course => {
+        db.collection('courseComments')
+            .doc(String(course.id))
+            .collection('comments')
+            .onSnapshot(snapshot => {
+                let total = 0, unanswered = 0;
+                snapshot.forEach(doc => {
+                    total++;
+                    if (!doc.data().reply) unanswered++;
+                });
+                commentCounts[course.id] = { total, unanswered };
+                // 해당 카드만 뱃지 업데이트
+                updateCommentBadge(course.id, unanswered);
+            });
+    });
+}
+
+function updateCommentBadge(courseId, unanswered) {
+    // 현재 렌더된 카드에서 해당 과목 찾아 뱃지 업데이트
+    const detailBtn = document.querySelector(`button[onclick="showDetail(${courseId})"]`);
+    if (!detailBtn) return;
+    const card = detailBtn.closest('.card');
+    if (!card) return;
+    let badge = card.querySelector('.comment-count-badge');
+    if (unanswered > 0) {
+        if (!badge) {
+            badge = document.createElement('span');
+            badge.className = 'comment-count-badge';
+            card.insertBefore(badge, card.querySelector('.button-group'));
+        }
+        badge.textContent = `💬 ${unanswered}`;
+    } else {
+        if (badge) badge.remove();
+    }
+}
 
 function loadComments(courseId) {
     if (commentUnsubscribe) { commentUnsubscribe(); commentUnsubscribe = null; }
