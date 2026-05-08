@@ -507,7 +507,7 @@ function toggleMobileCart() {
 }
 
 function loadMyCoursesFromDB() {
-    myEnrolledCourses = courses.filter(c => c.grade === currentGrade && c.group === '지정');
+    myEnrolledCourses = isAdminUser() ? [] : courses.filter(c => c.grade === currentGrade && c.group === '지정');
 
     if (isAdminUser()) {
         render();
@@ -593,22 +593,25 @@ function render() {
     courseListDiv.innerHTML = '';
     myCoursesDiv.innerHTML = '';
 
+    const gradeFilter = isAdminUser() ? [2, 3] : [currentGrade];
     const filteredCourses = courses.filter(c => 
-        c.grade === currentGrade && 
+        gradeFilter.includes(c.grade) && 
         (c.name.toLowerCase().includes(keyword) || c.desc.toLowerCase().includes(keyword))
     );
 
     if (filteredCourses.length === 0) {
         courseListDiv.innerHTML = '<p>결과가 없습니다.</p>';
     } else {
+        const grades    = isAdminUser() ? [2, 3] : [currentGrade];
         const semesters = [1, 2];
         
+        grades.forEach(grade => {
         semesters.forEach(semester => {
-            const coursesInSem = filteredCourses.filter(c => c.semester === semester);
+            const coursesInSem = filteredCourses.filter(c => c.grade === grade && c.semester === semester);
             if (coursesInSem.length > 0) {
                 const semWrapper = document.createElement('div');
                 semWrapper.className = 'grade-wrapper';
-                semWrapper.innerHTML = `<div class="grade-header">${currentGrade}학년 ${semester}학기 과목</div>`;
+                semWrapper.innerHTML = `<div class="grade-header">${grade}학년 ${semester}학기 과목</div>`;
                 courseListDiv.appendChild(semWrapper);
 
                 let groups = ['지정', ...[...new Set(coursesInSem.map(c => c.group))].filter(g => g !== '지정')];
@@ -621,8 +624,8 @@ function render() {
                         
                         const currentCount = getEnrolledCount(semester, group);
                         let maxCount = 0;
-                        if(group !== '지정' && rules[currentGrade] && rules[currentGrade][semester] && rules[currentGrade][semester][group]) {
-                            maxCount = rules[currentGrade][semester][group];
+                        if(group !== '지정' && rules[grade] && rules[grade][semester] && rules[grade][semester][group]) {
+                            maxCount = rules[grade][semester][group];
                         }
 
                         const isComplete = currentCount === maxCount;
@@ -675,6 +678,7 @@ function render() {
                 });
             }
         });
+        }); // grades.forEach
     }
 
     renderSubjectSummary(myEnrolledCourses, 'credit-summary-cart');
